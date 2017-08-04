@@ -1,78 +1,80 @@
 if (NOT MBGL_PLATFORM)
     if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
         set(MBGL_PLATFORM "macos")
+    elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+	   set(MBGL_PLATFORM "windows")
     else()
         set(MBGL_PLATFORM "linux")
     endif()
 endif()
 
-find_program(NodeJS_EXECUTABLE NAMES nodejs node)
-if (NOT NodeJS_EXECUTABLE)
-    message(FATAL_ERROR "Could not find Node.js")
-endif()
+# find_program(NodeJS_EXECUTABLE NAMES nodejs node)
+# if (NOT NodeJS_EXECUTABLE)
+#     message(FATAL_ERROR "Could not find Node.js")
+# endif()
 
-find_program(npm_EXECUTABLE NAMES npm)
-if (NOT npm_EXECUTABLE)
-    message(FATAL_ERROR "Could not find npm")
-endif()
+# find_program(npm_EXECUTABLE NAMES npm)
+# if (NOT npm_EXECUTABLE)
+#     message(FATAL_ERROR "Could not find npm")
+# endif()
 
-function(_npm_install DIRECTORY NAME ADDITIONAL_DEPS)
-    SET(NPM_INSTALL_FAILED FALSE)
-    if("${DIRECTORY}/package.json" IS_NEWER_THAN "${DIRECTORY}/node_modules/.${NAME}.stamp")
-        message(STATUS "Running 'npm install' for ${NAME}...")
-        execute_process(
-            COMMAND ${NodeJS_EXECUTABLE} ${npm_EXECUTABLE} install --ignore-scripts
-            WORKING_DIRECTORY "${DIRECTORY}"
-            RESULT_VARIABLE NPM_INSTALL_FAILED)
-        if(NOT NPM_INSTALL_FAILED)
-            execute_process(COMMAND ${CMAKE_COMMAND} -E touch "${DIRECTORY}/node_modules/.${NAME}.stamp")
-        endif()
-    endif()
+# function(_npm_install DIRECTORY NAME ADDITIONAL_DEPS)
+#     SET(NPM_INSTALL_FAILED FALSE)
+#     if("${DIRECTORY}/package.json" IS_NEWER_THAN "${DIRECTORY}/node_modules/.${NAME}.stamp")
+#         message(STATUS "Running 'npm install' for ${NAME}...")
+#         execute_process(
+#             COMMAND ${NodeJS_EXECUTABLE} ${npm_EXECUTABLE} install --ignore-scripts
+#             WORKING_DIRECTORY "${DIRECTORY}"
+#             RESULT_VARIABLE NPM_INSTALL_FAILED)
+#         if(NOT NPM_INSTALL_FAILED)
+#             execute_process(COMMAND ${CMAKE_COMMAND} -E touch "${DIRECTORY}/node_modules/.${NAME}.stamp")
+#         endif()
+#     endif()
 
-    add_custom_command(
-        OUTPUT "${DIRECTORY}/node_modules/.${NAME}.stamp"
-        COMMAND ${NodeJS_EXECUTABLE} ${npm_EXECUTABLE} install --ignore-scripts
-        COMMAND ${CMAKE_COMMAND} -E touch "${DIRECTORY}/node_modules/.${NAME}.stamp"
-        WORKING_DIRECTORY "${DIRECTORY}"
-        DEPENDS ${ADDITIONAL_DEPS} "${DIRECTORY}/package.json"
-        COMMENT "Running 'npm install' for ${NAME}...")
-endfunction()
+#     add_custom_command(
+#         OUTPUT "${DIRECTORY}/node_modules/.${NAME}.stamp"
+#         COMMAND ${NodeJS_EXECUTABLE} ${npm_EXECUTABLE} install --ignore-scripts
+#         COMMAND ${CMAKE_COMMAND} -E touch "${DIRECTORY}/node_modules/.${NAME}.stamp"
+#         WORKING_DIRECTORY "${DIRECTORY}"
+#         DEPENDS ${ADDITIONAL_DEPS} "${DIRECTORY}/package.json"
+#         COMMENT "Running 'npm install' for ${NAME}...")
+# endfunction()
 
-# Run submodule update
-message(STATUS "Updating submodules...")
-execute_process(
-    COMMAND git submodule update --init mapbox-gl-js
-    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
+# # Run submodule update
+# message(STATUS "Updating submodules...")
+# execute_process(
+#     COMMAND git submodule update --init mapbox-gl-js
+#     WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
 
-if(MBGL_PLATFORM STREQUAL "ios")
-    execute_process(
-        COMMAND git submodule update --init platform/ios/vendor/SMCalloutView platform/ios/uitest/KIF platform/ios/uitest/OHHTTPStubs
-        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
-endif()
+# if(MBGL_PLATFORM STREQUAL "ios")
+#     execute_process(
+#         COMMAND git submodule update --init platform/ios/vendor/SMCalloutView platform/ios/uitest/KIF platform/ios/uitest/OHHTTPStubs
+#         WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
+# endif()
 
-if(NOT EXISTS "${CMAKE_SOURCE_DIR}/mapbox-gl-js/node_modules")
-    # Symlink mapbox-gl-js/node_modules so that the modules that are
-    # about to be installed get cached between CI runs.
-    execute_process(
-         COMMAND ln -sF ../node_modules .
-         WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/mapbox-gl-js")
-endif()
+# if(NOT EXISTS "${CMAKE_SOURCE_DIR}/mapbox-gl-js/node_modules")
+#     # Symlink mapbox-gl-js/node_modules so that the modules that are
+#     # about to be installed get cached between CI runs.
+#     execute_process(
+#          COMMAND ln -sF ../node_modules .
+#          WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/mapbox-gl-js")
+# endif()
 
-# Add target for running submodule update during builds
-add_custom_target(
-    update-submodules ALL
-    COMMAND git submodule update --init mapbox-gl-js
-    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
-    COMMENT "Updating submodules..."
-)
+# # Add target for running submodule update during builds
+# add_custom_target(
+#     update-submodules ALL
+#     COMMAND git submodule update --init mapbox-gl-js
+#     WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+#     COMMENT "Updating submodules..."
+# )
 
-# Run npm install for both directories, and add custom commands, and a target that depends on them.
-_npm_install("${CMAKE_SOURCE_DIR}" mapbox-gl-native update-submodules)
-_npm_install("${CMAKE_SOURCE_DIR}/mapbox-gl-js/test/integration" mapbox-gl-js "${CMAKE_SOURCE_DIR}/node_modules/.mapbox-gl-native.stamp")
-add_custom_target(
-    npm-install ALL
-    DEPENDS "${CMAKE_SOURCE_DIR}/node_modules/.mapbox-gl-js.stamp"
-)
+# # Run npm install for both directories, and add custom commands, and a target that depends on them.
+# _npm_install("${CMAKE_SOURCE_DIR}" mapbox-gl-native update-submodules)
+# _npm_install("${CMAKE_SOURCE_DIR}/mapbox-gl-js/test/integration" mapbox-gl-js "${CMAKE_SOURCE_DIR}/node_modules/.mapbox-gl-native.stamp")
+# add_custom_target(
+#     npm-install ALL
+#     DEPENDS "${CMAKE_SOURCE_DIR}/node_modules/.mapbox-gl-js.stamp"
+# )
 
 # Generate source groups so the files are properly sorted in IDEs like Xcode.
 function(create_source_groups target)

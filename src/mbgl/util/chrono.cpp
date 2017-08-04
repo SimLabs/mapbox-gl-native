@@ -5,7 +5,7 @@
 #include <cstdio>
 #include <ctime>
 
-#if defined(_WINDOWS)
+#ifdef _WIN32
 #define _gmtime(t, i) gmtime_s(i, t)
 #else
 #define _gmtime(t, i) gmtime_r(t, i)
@@ -33,7 +33,7 @@ std::string iso8601(Timestamp timestamp) {
     std::tm info;
     _gmtime(&time, &info);
     char buffer[30];
-    std::strftime(buffer, sizeof(buffer), "%F %T", &info);
+    std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &info);
     return buffer;
 }
 

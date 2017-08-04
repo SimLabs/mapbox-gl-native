@@ -14,8 +14,10 @@ target_link_libraries(mbgl-render
     PRIVATE mbgl-core
 )
 
-target_add_mason_package(mbgl-render PRIVATE boost)
-target_add_mason_package(mbgl-render PRIVATE boost_libprogram_options)
+# if (NOT (MBGL_PLATOFRM STREQUAL "windows"))
+#     target_add_mason_package(mbgl-render PRIVATE boost)
+#     target_add_mason_package(mbgl-render PRIVATE boost_libprogram_options)
+# endif()
 
 mbgl_platform_render()
 
