@@ -28,3 +28,21 @@ If your platform or hybrid application framework isn’t listed here, consider e
 
 ## License
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fmapbox%2Fmapbox-gl-native.svg?type=large)](https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fmapbox%2Fmapbox-gl-native)
+
+### Build instructions for mapbox-interface.dll
+
+1. install MSYS64
+
+2. `pacman -Syyu` -- updates some inner MSYS structure
+
+3. repeat 2. -- updates MSYS packages
+
+4. `pacman -S base-devel git mingw-w64-x86_64-{cmake,ccache,curl,freeglut,glew,mesa,icu,libpng,libjpeg-turbo,libuv,libwebp,sqlite3,zlib}` -- install dependencies
+
+5. `git clone https://github.com/SimLabs/mapbox-gl-native` -- getting source
+
+6. `git checkout terra-integration` -- moving to this branch
+
+5. `cmake -G "MSYS Makefiles"` -- generates make with multiple targets
+
+6. `make mapbox-interface` -- makes the .dll (you can also try mapbox-interface-test to generate executable to see whether it works)
