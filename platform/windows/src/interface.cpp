@@ -13,7 +13,6 @@
 #include <mbgl/util/default_thread_pool.hpp>
 #include <mbgl/storage/default_file_source.hpp>
 #include <mbgl/style/style.hpp>
-#include "GL/glew.h"
 
 std::shared_ptr<mbgl::ThreadPool> threadPool = std::make_shared<mbgl::ThreadPool>(4);
 std::shared_ptr<mbgl::util::RunLoop> loop;
@@ -50,6 +49,9 @@ void init(camera_params_t const *camera_params, map_params_t const *map_params) 
 
     fileSource->setAPIBaseURL(api_base_url);
 
+    std::cerr << "  loop\n";
+    loop = std::make_shared<mbgl::util::RunLoop>();
+
     std::cerr << "  frontend\n";
     frontend = std::make_shared<mbgl::HeadlessFrontend>(mbgl::Size(width, height), pixelRatio, *fileSource, *threadPool);
     std::cerr << "  map\n";
@@ -82,8 +84,13 @@ void update(double zoom, double x0, double y0, uint32_t width, uint32_t height) 
 
 void save(const char *filename) {
     try {
+        std::cerr << "trying to save\n";
         std::ofstream out(filename, std::ios::binary);
-        out << mbgl::encodePNG(frontend->render(*map));
+        std::cerr << "opened stream\n";
+        mbgl::PremultipliedImage image = frontend->render(*map);
+        std::cerr << "rendered\n";
+        out << mbgl::encodePNG(image);
+        std::cerr << "wrote\n";
         out.close();
     } catch(std::exception& e) {
         std::cout << "Error: " << e.what() << std::endl;

@@ -1,6 +1,7 @@
 #ifndef MBGL_INTERFACE_H
 #define MBGL_INTERFACE_H
 
+#include "GL/glew.h"
 #include "mapbox-interface_export.h"
 #include <stdint.h>
 

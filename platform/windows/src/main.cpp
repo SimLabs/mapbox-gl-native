@@ -1,7 +1,7 @@
 #include <iostream>
 #include "interface.h"
 
-const camera_params_t camera_params = {512, 512, 0, 0, 0, 0, 0, 1};
+const camera_params_t camera_params = {512, 512, 0, 0, 1, 0, 0, 1};
 
 const map_params_t map_params = {
 	(char*) "http://localhost:8080/styles/klokantech-basic/style.json",
@@ -20,5 +20,6 @@ int main()
     std::cerr << "Save\n";
     save(save_path);
     std::cerr << "Done\n";
+    shutdown();
     return 0;
 }

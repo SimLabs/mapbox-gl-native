@@ -7,12 +7,15 @@ target_link_libraries(mbgl-loop-uv
 )
 
 macro(mbgl_platform_core)
+    message("Building core for windows")
+
     target_compile_options(mbgl-core
         PRIVATE -Wa,-mbig-obj
     )
 
     target_link_libraries(mbgl-core
-        PUBLIC -lOSMesa
+        PUBLIC -lgdi32
+        PUBLIC -lopengl32
         PUBLIC -lsqlite3
         PUBLIC -lpng
         PUBLIC -lwebp
@@ -36,7 +39,7 @@ macro(mbgl_platform_core)
     target_add_mason_package(mbgl-core PUBLIC nunicode)
     
     target_sources(mbgl-core
-        PRIVATE platform/default/headless_backend_osmesa.cpp
+        PRIVATE platform/windows/src/headless_backend_wgl.cpp
         PRIVATE platform/default/mbgl/gl/headless_display.cpp
     )
 
@@ -86,7 +89,6 @@ macro(mbgl_platform_core)
     )
 
     target_include_directories(mbgl-core
-        PRIVATE /mingw64/include/mesa
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/platform/default
     )
 endmacro()
@@ -120,10 +122,6 @@ add_executable(mapbox-interface-test
 
 target_link_libraries(mapbox-interface-test
     PRIVATE mapbox-interface
-    PRIVATE mbgl-core
-    PRIVATE mbgl-loop-uv
-    PRIVATE -lopengl32
-    PRIVATE -lglew32
 )
 
 add_custom_command(TARGET mapbox-interface-test POST_BUILD
@@ -135,6 +133,7 @@ add_custom_command(TARGET mapbox-interface-test POST_BUILD
 
 macro(mbgl_platform_render)
     target_link_libraries(mbgl-render
+        PUBLIC -lboost
         PUBLIC -lboost_program_options-mt
         PRIVATE mbgl-loop-uv
     )
