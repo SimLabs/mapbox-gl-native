@@ -13,22 +13,18 @@ const map_params_t map_params = {
 	(char*) "C:\\temp\\mbgl-cache.db",
 	(char*) ".",
 	(char*) "",
-	false};
+	true};
 
 const char *save_path = "C:\\Users\\user\\Desktop\\kek.png";
 
 int main()
 {
-	std::cerr << "Creating diplay beforehand (also singleton test)\n";
-	mbgl::HeadlessDisplay::create();
-	mbgl::HeadlessDisplay::create();
-	mbgl::HeadlessDisplay::create();
 	std::cerr << "Init\n";
     init(&camera_params, &map_params);
     std::cerr << "Save\n";
     save(save_path);
-    std::cerr << "Shutdown\n";
-    shutdown();
+    // std::cerr << "Shutdown\n";
+    // shutdown();
     std::cerr << "Finished\n";
     return 0;
 }

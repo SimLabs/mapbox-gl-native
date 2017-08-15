@@ -28,7 +28,12 @@ void makeThreadLowPriority() {
     struct sched_param param;
     param.sched_priority = 0;
 
-    if (sched_setscheduler(0, SCHED_RR, &param) != 0) {
+#ifdef _WIN32
+    auto sched_policy = SCHED_OTHER;
+#else
+    auto sched_policy = SCHED_IDLE;
+#endif
+    if (sched_setscheduler(0, sched_policy, &param) != 0) {
         Log::Warning(Event::General, "Couldn't set thread scheduling policy");
     }
 }

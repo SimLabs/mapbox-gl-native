@@ -11,6 +11,7 @@ macro(mbgl_platform_core)
 
     target_compile_options(mbgl-core
         PRIVATE -Wa,-mbig-obj
+        PRIVATE -mwindows
     )
 
     target_link_libraries(mbgl-core
@@ -40,7 +41,6 @@ macro(mbgl_platform_core)
     target_add_mason_package(mbgl-core PUBLIC nunicode)
     
     target_sources(mbgl-core
-        PRIVATE platform/default/mbgl/gl/headless_display.hpp
         PRIVATE platform/windows/src/headless_backend_wgl.cpp
         PRIVATE platform/windows/src/headless_display_wgl.cpp
     )
@@ -68,6 +68,7 @@ macro(mbgl_platform_core)
         PRIVATE platform/default/thread.cpp
         PRIVATE platform/default/bidi.cpp
         PRIVATE platform/default/thread_local.cpp
+        PRIVATE platform/default/run_loop.cpp
         PRIVATE platform/default/utf.cpp
 
         # Image handling
@@ -82,6 +83,7 @@ macro(mbgl_platform_core)
         PRIVATE platform/default/mbgl/gl/headless_frontend.hpp
         PRIVATE platform/default/mbgl/gl/headless_backend.cpp
         PRIVATE platform/default/mbgl/gl/headless_backend.hpp
+        PRIVATE platform/default/mbgl/gl/headless_display.hpp
 
         # Thread pool
         PRIVATE platform/default/mbgl/util/default_thread_pool.hpp
@@ -102,6 +104,7 @@ include_directories(
 
 # TODO : resolve problem with unlinked interface D:
 add_library(mapbox-interface SHARED
+    platform/windows/src/verbose_map_observer.hpp
     platform/windows/src/interface.cpp
     platform/windows/src/interface.h
     "${PROJECT_BINARY_DIR}/mapbox-interface_export.h"

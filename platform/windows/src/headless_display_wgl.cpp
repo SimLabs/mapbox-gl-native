@@ -15,6 +15,7 @@ public:
     Impl();
     ~Impl();
 
+    HWND hwnd = nullptr;
     HDC hdc = nullptr;
 
     PIXELFORMATDESCRIPTOR pfd =
@@ -40,24 +41,64 @@ public:
     int iPixelFormat;
 };
 
+// dummy function
+LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+    return DefWindowProc(hwnd, msg, wparam, lparam);
+}
+
 HeadlessDisplay::Impl::Impl() {
     std::cerr << "CONSTRUCTING DISPLAY\n";
 
-    hdc = CreateCompatibleDC(NULL);
+    // Window description 
+    std::cerr << "  describing window\n";
+
+    WNDCLASSEX ex;
+    ex.cbSize = sizeof(WNDCLASSEX);
+    ex.style = CS_HREDRAW|CS_VREDRAW|CS_OWNDC;
+    ex.lpfnWndProc = WinProc;
+    ex.cbClsExtra = 0;
+    ex.cbWndExtra = 0;
+    ex.hInstance = GetModuleHandle(nullptr);
+    ex.hIcon = LoadIcon(nullptr, IDI_APPLICATION);
+    ex.hCursor = LoadCursor(nullptr, IDC_ARROW);
+    ex.hbrBackground = (HBRUSH) GetStockObject(BLACK_BRUSH);
+    ex.lpszMenuName = nullptr;
+    ex.lpszClassName = "wndclass";
+    ex.hIconSm = nullptr;
+     
+    std::cerr << "  registering window\n";
+    RegisterClassEx(&ex);
+     
+    // Window creation
+    std::cerr << "  creating window\n";
+
+    hwnd = CreateWindowEx(NULL,
+        ex.lpszClassName,
+        "Window",
+        WS_OVERLAPPEDWINDOW,
+        CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+        NULL,
+        NULL,
+        ex.hInstance,
+        NULL);
+    assert(hwnd);
+
+    std::cerr << "  getting device context\n";
+    hdc = GetDC(hwnd);
     assert(hdc);
   
+    std::cerr << "  choosing pixel format\n";
     iPixelFormat = ChoosePixelFormat(hdc, &pfd);
-
     if (!iPixelFormat) {
         throw std::runtime_error("Error choosing pixel format: " + std::to_string(GetLastError()));
     }
 
-    std::cerr << "  Trying to set pixel format\n";
+    std::cerr << "  setting pixel format\n";
     auto result = SetPixelFormat(hdc, iPixelFormat, &pfd);
     if (result == FALSE) {
         auto errcode = GetLastError();
-        std::cerr << "Could not set pixel format: " << errcode << "\n";
-        // throw std::runtime_error("Error setting pixel format: " + std::to_string(errcode));
+        // std::cerr << "Could not set pixel format: " << errcode << "\n";
+        throw std::runtime_error("Error setting pixel format: " + std::to_string(errcode));
     }
     std::cerr << "CONSTRUCTED DISPLAY\n";
 }
@@ -66,6 +107,8 @@ HeadlessDisplay::Impl::~Impl() {
     std::cerr << "DESTROYING DISPLAY\n";
     DeleteDC(hdc);
     hdc = nullptr;
+    DestroyWindow(hwnd);
+    hwnd = nullptr;
     std::cerr << "DESTROYED DISPLAY\n";
 }
 
@@ -84,5 +127,5 @@ HeadlessDisplay::HeadlessDisplay()
 }
 
 HeadlessDisplay::~HeadlessDisplay() = default;
-
+    
 } // namespace mbgl

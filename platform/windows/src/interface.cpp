@@ -9,12 +9,14 @@
 #include <mbgl/util/image.hpp>
 #include <mbgl/util/run_loop.hpp>
 
+#include "verbose_map_observer.hpp"
 #include <mbgl/gl/headless_frontend.hpp>
+#include <mbgl/gl/headless_backend.hpp>
 #include <mbgl/util/default_thread_pool.hpp>
 #include <mbgl/storage/default_file_source.hpp>
 #include <mbgl/style/style.hpp>
 
-std::shared_ptr<mbgl::ThreadPool> threadPool = std::make_shared<mbgl::ThreadPool>(1);
+std::shared_ptr<mbgl::ThreadPool> threadPool;
 std::shared_ptr<mbgl::util::RunLoop> loop;
 std::shared_ptr<mbgl::DefaultFileSource> fileSource;
 std::shared_ptr<mbgl::HeadlessFrontend> frontend;
@@ -39,6 +41,12 @@ void init(camera_params_t const *camera_params, map_params_t const *map_params) 
     std::string token = map_params->token;
     bool debug = map_params->debug;
 
+    std::cerr << "  loop\n";
+    loop = std::make_shared<mbgl::util::RunLoop>();
+
+    std::cerr << "  threadPool\n";
+    threadPool = std::make_shared<mbgl::ThreadPool>(4);
+
     std::cerr << "  fileSource\n";
     fileSource = std::make_shared<mbgl::DefaultFileSource>(cache_file, asset_root);
 
@@ -49,13 +57,10 @@ void init(camera_params_t const *camera_params, map_params_t const *map_params) 
 
     fileSource->setAPIBaseURL(api_base_url);
 
-    std::cerr << "  loop\n";
-    loop = std::make_shared<mbgl::util::RunLoop>();
-
     std::cerr << "  frontend\n";
     frontend = std::make_shared<mbgl::HeadlessFrontend>(mbgl::Size(width, height), pixelRatio, *fileSource, *threadPool);
     std::cerr << "  map\n";
-    map = std::make_shared<mbgl::Map>(*frontend, mbgl::MapObserver::nullObserver(), frontend->getSize(), pixelRatio, *fileSource, *threadPool, mbgl::MapMode::Still);
+    map = std::make_shared<mbgl::Map>(*frontend, mbgl::VerboseMapObserver::debugObserver(), frontend->getSize(), pixelRatio, *fileSource, *threadPool, mbgl::MapMode::Still);
 
     if (style_path.find("://") == std::string::npos) {
         style_path = std::string("file://") + style_path;
@@ -74,9 +79,9 @@ void init(camera_params_t const *camera_params, map_params_t const *map_params) 
 void shutdown() {
     map.reset();
     frontend.reset();
-    loop.reset();
     fileSource.reset();
     threadPool.reset();
+    loop.reset();
 }
 
 void update(double zoom, double x0, double y0, uint32_t width, uint32_t height) {

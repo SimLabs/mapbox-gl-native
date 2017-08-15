@@ -24,9 +24,6 @@ struct WGLImpl : public HeadlessBackend::Impl {
         if (!wglMakeCurrent(deviceContext, glContext)) {
             throw std::runtime_error("Switching OpenGL context failed.\n");
         }
-
-        std::cerr << "  glewInit\n";
-        glewInit();
     }
 
     void deactivateContext() final {
@@ -59,6 +56,9 @@ void HeadlessBackend::createContext() {
     if (glContext == nullptr) {
         throw std::runtime_error("Error creating GL context object: " + std::to_string(GetLastError()));
     }
+
+    std::cerr << "  glewInit\n";
+    glewInit();
 
     impl = std::make_unique<WGLImpl>(hdc, glContext);
 }
