@@ -1,6 +1,9 @@
 #include <mbgl/gl/headless_backend.hpp>
+#include <mbgl/gl/headless_display.hpp>
 #include <mbgl/util/logging.hpp>
 
+#include <iostream>
+#include <GL/glew.h>
 #include <windows.h>
 
 #include <cassert>
@@ -21,6 +24,15 @@ struct WGLImpl : public HeadlessBackend::Impl {
         if (!wglMakeCurrent(deviceContext, glContext)) {
             throw std::runtime_error("Switching OpenGL context failed.\n");
         }
+
+        std::cerr << "  glewInit\n";
+        glewInit();
+    }
+
+    void deactivateContext() final {
+        if (!wglMakeCurrent(nullptr, nullptr)) {
+            throw std::runtime_error("Removing OpenGL context failed.\n");
+        }
     }
 
     HDC deviceContext = nullptr;
@@ -32,46 +44,23 @@ gl::ProcAddress HeadlessBackend::initializeExtension(const char* name) {
 }
 
 bool HeadlessBackend::hasDisplay() {
-    return true;
+    if (!display) {
+        display.reset(HeadlessDisplay::create());
+    }
+    return bool(display);
 };
 
 void HeadlessBackend::createContext() {
     assert(!hasContext());
 
-    HDC hdc = CreateCompatibleDC(NULL);
-    
-    PIXELFORMATDESCRIPTOR pfd =
-    {
-        sizeof(PIXELFORMATDESCRIPTOR),
-        1,
-        PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,    //Flags
-        PFD_TYPE_RGBA,            //The kind of framebuffer. RGBA or palette.
-        32,                       //Colordepth of the framebuffer.
-        0, 0, 0, 0, 0, 0,
-        0,
-        0,
-        0,
-        0, 0, 0, 0,
-        24,                       //Number of bits for the depthbuffer
-        8,                        //Number of bits for the stencilbuffer
-        0,                        //Number of Aux buffers in the framebuffer.
-        PFD_MAIN_PLANE,
-        0,
-        0, 0, 0
-    };
-
-    int iPixelFormat = ChoosePixelFormat(hdc, &pfd);
-
-    if (!SetPixelFormat(hdc, iPixelFormat, &pfd)) {
-        throw std::runtime_error("Error setting pixel format.");
-    }
+    HDC hdc = display->attribute<HDC>();
 
     HGLRC glContext = wglCreateContext(hdc);
     if (glContext == nullptr) {
-        throw std::runtime_error("Error creating GL context object.");
+        throw std::runtime_error("Error creating GL context object: " + std::to_string(GetLastError()));
     }
 
-    impl.reset(new WGLImpl(hdc, glContext));
+    impl = std::make_unique<WGLImpl>(hdc, glContext);
 }
 
 } // namespace mbgl

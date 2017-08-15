@@ -15,6 +15,7 @@ macro(mbgl_platform_core)
 
     target_link_libraries(mbgl-core
         PUBLIC -lgdi32
+        PUBLIC -lkernel32
         PUBLIC -lopengl32
         PUBLIC -lsqlite3
         PUBLIC -lpng
@@ -39,8 +40,9 @@ macro(mbgl_platform_core)
     target_add_mason_package(mbgl-core PUBLIC nunicode)
     
     target_sources(mbgl-core
+        PRIVATE platform/default/mbgl/gl/headless_display.hpp
         PRIVATE platform/windows/src/headless_backend_wgl.cpp
-        PRIVATE platform/default/mbgl/gl/headless_display.cpp
+        PRIVATE platform/windows/src/headless_display_wgl.cpp
     )
 
     target_sources(mbgl-core
@@ -80,12 +82,12 @@ macro(mbgl_platform_core)
         PRIVATE platform/default/mbgl/gl/headless_frontend.hpp
         PRIVATE platform/default/mbgl/gl/headless_backend.cpp
         PRIVATE platform/default/mbgl/gl/headless_backend.hpp
-        PRIVATE platform/default/mbgl/gl/headless_display.hpp
 
         # Thread pool
-        PRIVATE platform/default/mbgl/util/default_thread_pool.cpp
+        PRIVATE platform/default/mbgl/util/default_thread_pool.hpp
         PRIVATE platform/default/mbgl/util/default_thread_pool.cpp
         PRIVATE platform/default/mbgl/util/shared_thread_pool.cpp
+        PRIVATE platform/default/mbgl/util/shared_thread_pool.hpp
     )
 
     target_include_directories(mbgl-core
@@ -116,6 +118,8 @@ include(GenerateExportHeader)
 generate_export_header(mapbox-interface)
 
 add_executable(mapbox-interface-test
+    ${CMAKE_CURRENT_SOURCE_DIR}/platform/default/mbgl/gl/headless_display.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/platform/windows/src/headless_display_wgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/platform/windows/src/interface.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platform/windows/src/main.cpp
 )

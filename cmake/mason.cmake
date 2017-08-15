@@ -47,7 +47,11 @@ function(mason_detect_platform)
                 COMMAND uname -m
                 OUTPUT_VARIABLE MASON_PLATFORM_VERSION
                 OUTPUT_STRIP_TRAILING_WHITESPACE)
-            set(MASON_PLATFORM_VERSION "${MASON_PLATFORM_VERSION}" PARENT_SCOPE)
+            if (MASON_PLATFORM_VERSION)
+                set(MASON_PLATFORM_VERSION "${MASON_PLATFORM_VERSION}" PARENT_SCOPE)
+            else()
+                set(MASON_PLATFORM_VERSION "x86_64" PARENT_SCOPE) # aka default
+            endif()
         endif()
     endif()
 endfunction()

@@ -14,7 +14,7 @@
 #include <mbgl/storage/default_file_source.hpp>
 #include <mbgl/style/style.hpp>
 
-std::shared_ptr<mbgl::ThreadPool> threadPool = std::make_shared<mbgl::ThreadPool>(4);
+std::shared_ptr<mbgl::ThreadPool> threadPool = std::make_shared<mbgl::ThreadPool>(1);
 std::shared_ptr<mbgl::util::RunLoop> loop;
 std::shared_ptr<mbgl::DefaultFileSource> fileSource;
 std::shared_ptr<mbgl::HeadlessFrontend> frontend;
@@ -69,12 +69,14 @@ void init(camera_params_t const *camera_params, map_params_t const *map_params) 
     if (debug) {
         map->setDebug(debug ? mbgl::MapDebugOptions::TileBorders | mbgl::MapDebugOptions::ParseStatus : mbgl::MapDebugOptions::NoDebug);
     }
-
-    std::cerr << "  glewInit\n";
-    glewInit();
 }
 
 void shutdown() {
+    map.reset();
+    frontend.reset();
+    loop.reset();
+    fileSource.reset();
+    threadPool.reset();
 }
 
 void update(double zoom, double x0, double y0, uint32_t width, uint32_t height) {

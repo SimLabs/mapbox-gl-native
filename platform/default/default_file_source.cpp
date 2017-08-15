@@ -13,6 +13,7 @@
 #include <mbgl/util/work_request.hpp>
 
 #include <cassert>
+#include <iostream>
 
 namespace {
 
@@ -168,6 +169,7 @@ public:
 
 private:
     OfflineDownload& getDownload(int64_t regionID) {
+        std::cerr << "getting region " << regionID << "\n";
         auto it = downloads.find(regionID);
         if (it != downloads.end()) {
             return *it->second;
