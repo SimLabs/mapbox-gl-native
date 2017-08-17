@@ -16,6 +16,7 @@ macro(mbgl_platform_core)
 
     target_link_libraries(mbgl-core
         PUBLIC -lgdi32
+        PUBLIC -lglew32
         PUBLIC -lkernel32
         PUBLIC -lopengl32
         PUBLIC -lsqlite3
@@ -68,9 +69,8 @@ macro(mbgl_platform_core)
         PRIVATE platform/default/thread.cpp
         PRIVATE platform/default/bidi.cpp
         PRIVATE platform/default/thread_local.cpp
-        PRIVATE platform/default/run_loop.cpp
         PRIVATE platform/default/utf.cpp
-
+        
         # Image handling
         PRIVATE platform/default/image.cpp
         PRIVATE platform/default/jpeg_reader.cpp
@@ -99,43 +99,35 @@ endmacro()
 
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/platform/default
+    ${CMAKE_CURRENT_SOURCE_DIR}/platform/windows/src
 )
 
-# TODO : resolve problem with unlinked interface D:
-add_library(mapbox-interface SHARED
+add_library(mbgl-wrapper SHARED
+    platform/windows/src/mbgl_wrapper/mbgl_wrapper.h
+    platform/windows/src/mbgl_wrapper/mbgl_wrapper.cpp
+)
+
+target_include_directories(mbgl-wrapper
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
+
+target_link_libraries(mbgl-wrapper
+    PRIVATE mbgl-core
+    PRIVATE mbgl-loop-uv
+)
+
+add_executable(mapbox-interface-test
     platform/windows/src/verbose_map_observer.hpp
     platform/windows/src/interface.cpp
     platform/windows/src/interface.h
-    "${PROJECT_BINARY_DIR}/mapbox-interface_export.h"
-)
-
-target_link_libraries(mapbox-interface
-    PRIVATE mbgl-core
-    PRIVATE mbgl-loop-uv
-    PRIVATE -lopengl32
-    PRIVATE -lglew32
-)
-
-include(GenerateExportHeader)
-generate_export_header(mapbox-interface)
-
-add_executable(mapbox-interface-test
-    ${CMAKE_CURRENT_SOURCE_DIR}/platform/default/mbgl/gl/headless_display.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/platform/windows/src/headless_display_wgl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/platform/windows/src/interface.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platform/windows/src/main.cpp
+    platform/windows/src/main.cpp
 )
 
 target_link_libraries(mapbox-interface-test
-    PRIVATE mapbox-interface
-)
-
-add_custom_command(TARGET mapbox-interface-test POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        $<TARGET_FILE:mapbox-interface> $<TARGET_FILE_DIR:mapbox-interface-test>
-    COMMENT "Copying mapbox-interface shared lib alongside mapbox-interface-test."
-    VERBATIM
+    PRIVATE mbgl-core
+    PRIVATE mbgl-loop-uv
 )
 
 macro(mbgl_platform_render)

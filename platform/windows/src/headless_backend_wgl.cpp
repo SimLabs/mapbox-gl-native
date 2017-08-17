@@ -2,7 +2,6 @@
 #include <mbgl/gl/headless_display.hpp>
 #include <mbgl/util/logging.hpp>
 
-#include <iostream>
 #include <GL/glew.h>
 #include <windows.h>
 
@@ -24,7 +23,6 @@ struct WGLImpl : public HeadlessBackend::Impl {
         if (!wglMakeCurrent(deviceContext, glContext)) {
             throw std::runtime_error("Switching OpenGL context failed.\n");
         }
-        // std::cerr << "  glewInit\n";
         glewInit();
     }
 
@@ -52,21 +50,15 @@ bool HeadlessBackend::hasDisplay() {
 void HeadlessBackend::createContext() {
     assert(!hasContext());
     assert(hasDisplay());
-    std::cerr << "creating context\n";
 
-    std::cerr << "  getting device context\n";
     HDC hdc = display->attribute<HDC>();
 
-    std::cerr << "  wglCreateContext\n";
     HGLRC glContext = wglCreateContext(hdc);
     if (glContext == nullptr) {
-        std::cerr << "  wglCreateContext returned null\n";
         throw std::runtime_error("Error creating GL context object: " + std::to_string(GetLastError()));
     }
 
-    std::cerr << "  WGLImpl\n";
     impl = std::make_unique<WGLImpl>(hdc, glContext);
-    std::cerr << "done creating context\n";
 }
 
 } // namespace mbgl

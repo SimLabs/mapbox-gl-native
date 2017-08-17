@@ -1,5 +1,18 @@
 #include "mbgl_wrapper/mbgl_wrapper.h"
 
+#include <mbgl/util/default_thread_pool.hpp>
+#include <mbgl/util/run_loop.hpp>
+#include <mbgl/storage/default_file_source.hpp>
+#include <mbgl/gl/headless_frontend.hpp>
+#include <mbgl/map/map.hpp>
+#include <mbgl/style/style.hpp>
+#include <mbgl/util/work_task.hpp>
+#include <mbgl/tile/tile_id.hpp>
+
+#include <memory>
+
+#define __HELPER_DL_EXPORT __attribute__((used, visibility ("default")))
+
 namespace mbgl_wrapper
 {
 
@@ -17,24 +30,20 @@ std::shared_ptr<mbgl::DefaultFileSource> fileSource;
 std::shared_ptr<mbgl::HeadlessFrontend> frontend;
 std::shared_ptr<mbgl::Map> map;
 
-params_t params;
+params_t const *params;
 
-void init(params_t const * params_)
+void init(params_t const *params_)
 {
-    params = *params_;
-    double pixelRatio = 1
+    params = params_;
+    double pixelRatio = 1;
 
-    std::cerr << "Creating FileSource with cache file and asset file addresses\n";
     fileSource = std::make_shared<mbgl::DefaultFileSource>("C:\\temp\\mbgl-cache.db", ".");
     fileSource->setAPIBaseURL("http://localhost:8080/");
 
-    std::cerr << "Creating RunLoop\n";
     loop = std::make_shared<mbgl::util::RunLoop>();
 
-    std::cerr << "Creating frontend\n";
     frontend = std::make_shared<mbgl::HeadlessFrontend>(mbgl::Size(params->tile_width, params->tile_height), pixelRatio, *fileSource, *threadPool);
     
-    std::cerr << "Creating map\n";
     map = std::make_shared<mbgl::Map>(*frontend, mbgl::MapObserver::nullObserver(), frontend->getSize(), pixelRatio, *fileSource, *threadPool, mbgl::MapMode::Still);
 
     std::string style_path = "http://localhost:8080/styles/klokantech-basic/style.json";
@@ -58,25 +67,29 @@ void shutdown()
 
 void update(uint32_t zoom, uint32_t x0, uint32_t y0, uint32_t width, uint32_t height)
 {
-    // ignoring width and height
-    map->setLatLngZoom({ x0, y0 }, zoom);
-    map->setSize({ width, height });
-    mbgl::PremultipliedImage image = frontend.render(map);
-    if (params.buffer_ready_f) {
+    // getting bounds
+    mbgl::CanonicalTileID first(zoom, x0, y0);
+    mbgl::CanonicalTileID last(zoom, x0 + width, y0 + height);
+    mbgl::LatLngBounds map_bounds(first);
+    map_bounds.extend(mbgl::LatLngBounds(last));
+
+    // setting bounds
+    map->jumpTo(map->cameraForLatLngBounds(map_bounds, mbgl::EdgeInsets()));
+    // map->setSize({ width, height });
+
+    mbgl::PremultipliedImage image = frontend->render(*map);
+    if (params->buffer_ready_f) {
         buffer_t buffer;
         buffer.zoom = zoom;
         buffer.x0 = x0;
         buffer.y0 = y0;
         buffer.width = width;
         buffer.height = height;
-        buffer.byte_per_pixel = image.channels;
+        buffer.bytes_per_pixel = image.channels;
         buffer.buffer_size = image.bytes();
-        buffer.ptr = *image.data;
+        buffer.ptr = image.data.get();
 
-        std::thread runner([buffer]() {
-            params.buffer_ready_f(params.client_handle, &buffer);
-        });
-        runner.detach();
+        loop->invoke(params->buffer_ready_f, params->client_handle, &buffer);
     }
 }
 

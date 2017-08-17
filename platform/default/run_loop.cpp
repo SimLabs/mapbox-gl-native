@@ -164,7 +164,7 @@ void RunLoop::addWatch(int fd, Event event, std::function<void(int, Event)>&& ca
         watch = watchPtr.get();
         impl->watchPoll[fd] = std::move(watchPtr);
 
-        if (uv_poll_init(impl->loop, &watch->poll, fd)) {
+        if (uv_poll_init_socket(impl->loop, &watch->poll, fd)) { // because in Windows file desriptors and sockets are not the same
             throw std::runtime_error("Failed to init poll on file descriptor.");
         }
     } else {

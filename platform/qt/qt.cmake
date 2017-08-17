@@ -72,12 +72,23 @@ add_library(qmapboxgl SHARED
     platform/default/mbgl/util/default_styles.hpp
 )
 
+if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+    target_compile_options(qmapboxgl
+        PRIVATE -Wa,-mbig-obj
+        PRIVATE -mwindows
+    )
+endif()
+
 # C++ app
 add_executable(mbgl-qt
     platform/qt/app/main.cpp
     platform/qt/app/mapwindow.cpp
     platform/qt/app/mapwindow.hpp
     platform/qt/resources/common.qrc
+)
+
+target_link_libraries(mbgl-qt
+    PRIVATE -lglew32
 )
 
 xcode_create_scheme(TARGET mbgl-qt)
@@ -108,14 +119,23 @@ elseif (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
     list(APPEND MBGL_QT_FILES
         PRIVATE platform/qt/src/thread.cpp
     )
+    list(APPEND MBGL_QT_LIBRARIES
+        PRIVATE -lopengl32
+        PRIVATE -lglew32
+    )
+    add_compile_options(
+        -Wa,-mbig-obj
+    )
 endif()
 
-add_custom_command(
-    TARGET qmapboxgl
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-            ${CMAKE_SOURCE_DIR}/platform/qt/include
-            ${CMAKE_CURRENT_BINARY_DIR}/platform/qt/include
-)
+if (NOT ${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
+    add_custom_command(
+        TARGET qmapboxgl
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+                ${CMAKE_SOURCE_DIR}/platform/qt/include
+                ${CMAKE_CURRENT_BINARY_DIR}/platform/qt/include
+    )
+endif()
 
 xcode_create_scheme(TARGET qmapboxgl)

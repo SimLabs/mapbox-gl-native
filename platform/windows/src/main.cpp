@@ -10,7 +10,8 @@ const camera_params_t camera_params = {512, 512, 0, 0, 1, 0, 0, 1};
 const map_params_t map_params = {
 	(char*) "http://localhost:8080/styles/klokantech-basic/style.json",
 	(char*) "http://localhost:8080/",
-	(char*) "C:\\temp\\mbgl-cache.db",
+    // (char*) "C:\\temp\\mbgl-cache.db",
+    (char*) ":memory:",
 	(char*) ".",
 	(char*) "",
 	true};
@@ -23,8 +24,8 @@ int main()
     init(&camera_params, &map_params);
     std::cerr << "Save\n";
     save(save_path);
-    // std::cerr << "Shutdown\n";
-    // shutdown();
+    std::cerr << "Shutdown\n";
+    shutdown();
     std::cerr << "Finished\n";
     return 0;
 }

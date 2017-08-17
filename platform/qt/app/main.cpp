@@ -7,7 +7,11 @@ int main(int argc, char **argv)
     QApplication app(argc, argv);
 
     QMapboxGLSettings settings;
+#ifdef _WIN32
+    settings.setCacheDatabasePath("C:\\temp\\mbgl-cache.db");
+#else
     settings.setCacheDatabasePath("/tmp/mbgl-cache.db");
+#endif
     settings.setCacheDatabaseMaximumSize(20 * 1024 * 1024);
 
     MapWindow window(settings);

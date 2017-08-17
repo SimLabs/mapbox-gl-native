@@ -2,7 +2,6 @@
 
 #include <windows.h>
 
-#include <iostream>
 #include <cassert>
 #include <cstring>
 #include <stdexcept>
@@ -47,11 +46,7 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 }
 
 HeadlessDisplay::Impl::Impl() {
-    std::cerr << "CONSTRUCTING DISPLAY\n";
-
-    // Window description 
-    std::cerr << "  describing window\n";
-
+    // Window description  
     WNDCLASSEX ex;
     ex.cbSize = sizeof(WNDCLASSEX);
     ex.style = CS_HREDRAW|CS_VREDRAW|CS_OWNDC;
@@ -66,12 +61,9 @@ HeadlessDisplay::Impl::Impl() {
     ex.lpszClassName = "wndclass";
     ex.hIconSm = nullptr;
      
-    std::cerr << "  registering window\n";
     RegisterClassEx(&ex);
      
     // Window creation
-    std::cerr << "  creating window\n";
-
     hwnd = CreateWindowEx(NULL,
         ex.lpszClassName,
         "Window",
@@ -83,33 +75,25 @@ HeadlessDisplay::Impl::Impl() {
         NULL);
     assert(hwnd);
 
-    std::cerr << "  getting device context\n";
     hdc = GetDC(hwnd);
     assert(hdc);
   
-    std::cerr << "  choosing pixel format\n";
     iPixelFormat = ChoosePixelFormat(hdc, &pfd);
     if (!iPixelFormat) {
         throw std::runtime_error("Error choosing pixel format: " + std::to_string(GetLastError()));
     }
 
-    std::cerr << "  setting pixel format\n";
     auto result = SetPixelFormat(hdc, iPixelFormat, &pfd);
     if (result == FALSE) {
-        auto errcode = GetLastError();
-        // std::cerr << "Could not set pixel format: " << errcode << "\n";
-        throw std::runtime_error("Error setting pixel format: " + std::to_string(errcode));
+        throw std::runtime_error("Error setting pixel format: " + std::to_string(GetLastError()));
     }
-    std::cerr << "CONSTRUCTED DISPLAY\n";
 }
 
 HeadlessDisplay::Impl::~Impl() {
-    std::cerr << "DESTROYING DISPLAY\n";
     DeleteDC(hdc);
     hdc = nullptr;
     DestroyWindow(hwnd);
     hwnd = nullptr;
-    std::cerr << "DESTROYED DISPLAY\n";
 }
 
 template <>

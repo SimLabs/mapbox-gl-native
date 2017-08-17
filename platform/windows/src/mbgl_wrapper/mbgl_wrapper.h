@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdint.h>
+
 namespace mbgl_wrapper
 {
     struct buffer_t

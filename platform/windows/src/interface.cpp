@@ -12,7 +12,7 @@
 #include "verbose_map_observer.hpp"
 #include <mbgl/gl/headless_frontend.hpp>
 #include <mbgl/gl/headless_backend.hpp>
-#include <mbgl/util/default_thread_pool.hpp>
+#include <mbgl/util/shared_thread_pool.hpp>
 #include <mbgl/storage/default_file_source.hpp>
 #include <mbgl/style/style.hpp>
 
@@ -45,7 +45,8 @@ void init(camera_params_t const *camera_params, map_params_t const *map_params) 
     loop = std::make_shared<mbgl::util::RunLoop>();
 
     std::cerr << "  threadPool\n";
-    threadPool = std::make_shared<mbgl::ThreadPool>(4);
+    // threadPool = std::make_shared<mbgl::ThreadPool>(4);
+    threadPool = mbgl::sharedThreadPool();
 
     std::cerr << "  fileSource\n";
     fileSource = std::make_shared<mbgl::DefaultFileSource>(cache_file, asset_root);
@@ -70,7 +71,7 @@ void init(camera_params_t const *camera_params, map_params_t const *map_params) 
     map->setLatLngZoom({ lat, lon }, zoom);
     map->setBearing(bearing);
     map->setPitch(pitch);
-
+    
     if (debug) {
         map->setDebug(debug ? mbgl::MapDebugOptions::TileBorders | mbgl::MapDebugOptions::ParseStatus : mbgl::MapDebugOptions::NoDebug);
     }
