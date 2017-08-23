@@ -29,6 +29,8 @@ std::shared_ptr<mbgl::Map> map;
 
 params_t params;
 
+std::vector<uint8_t> buffer_data;
+
 void init(params_t const *params_)
 {
     mbgl::Log::Debug(mbgl::Event::Setup, "Init");
@@ -36,7 +38,11 @@ void init(params_t const *params_)
     double pixelRatio = 1;
 
     fileSource = std::make_shared<mbgl::DefaultFileSource>("C:\\temp\\mbgl-cache.db", ".");
-    fileSource->setAPIBaseURL("http://localhost:8080/");
+
+    std::string server_url(params.server_url);
+
+    fileSource->setAPIBaseURL(server_url);  //"http://192.168.1.61:8080/"
+    mbgl::Log::Info(mbgl::Event::Setup, "Server path: %s", server_url.c_str());
 
     loop = std::make_shared<mbgl::util::RunLoop>();
 
@@ -44,7 +50,8 @@ void init(params_t const *params_)
     
     map = std::make_shared<mbgl::Map>(*frontend, mbgl::MapObserver::nullObserver(), frontend->getSize(), pixelRatio, *fileSource, *threadPool, mbgl::MapMode::Still);
 
-    std::string style_path = "http://localhost:8080/styles/klokantech-basic/style.json";
+    std::string style_path = params.style_url;//"http://192.168.1.61:8080/styles/klokantech-basic/style.json";
+    mbgl::Log::Info(mbgl::Event::Setup, "Style path: %s", style_path.c_str());
     if (style_path.find("://") == std::string::npos) {
         style_path = std::string("file://") + style_path;
     }
@@ -143,20 +150,20 @@ void update(uint32_t zoom, uint32_t x0, uint32_t y0, uint32_t width, uint32_t he
     mbgl::PremultipliedImage image = frontend->render(*map);
     mbgl::Log::Debug(mbgl::Event::Render, "Got image of size %dx%d", image.size.width, image.size.height);
     if (params.buffer_ready_f) {
-        buffer_t *buffer = new buffer_t;
-        buffer->zoom = zoom;
-        buffer->x0 = x0;
-        buffer->y0 = y0;
-        buffer->width = width;
-        buffer->height = height;
-        buffer->bytes_per_pixel = image.channels;
-        buffer->buffer_size = image.bytes();
-        uint8_t *ptr = new uint8_t[buffer->buffer_size];
-        std::copy(image.data.get(), image.data.get() + buffer->buffer_size, ptr);
-        buffer->ptr = ptr;
+        buffer_t buffer;
+        buffer.zoom = zoom;
+        buffer.x0 = x0;
+        buffer.y0 = y0;
+        buffer.width = width;
+        buffer.height = height;
+        buffer.bytes_per_pixel = image.channels;
+        buffer.buffer_size = image.bytes();
+
+        buffer_data.assign(image.data.get(), image.data.get() + buffer.buffer_size);
+        buffer.ptr = buffer_data.data();
 
         mbgl::Log::Debug(mbgl::Event::Render, "Finished rendering callback invocation");
-        params.buffer_ready_f(params.client_handle, buffer);
+        params.buffer_ready_f(params.client_handle, &buffer);
         // log_stream << "Async callback" << std::endl;
         // loop->invoke(params.buffer_ready_f, params.client_handle, buffer);
     }

@@ -37,7 +37,7 @@ If your platform or hybrid application framework isn’t listed here, consider e
 
 3. repeat 2. -- updates MSYS packages
 
-4. `pacman -S base-devel git mingw-w64-x86_64-{cmake,ccache,curl,freeglut,glew,mesa,icu,libpng,libjpeg-turbo,libuv,libwebp,sqlite3,zlib}` -- install dependencies
+4. `pacman --needed  -S base-devel git mingw-w64-x86_64-{cmake,ccache,curl,freeglut,glew,mesa,icu,libpng,libjpeg-turbo,libuv,libwebp,sqlite3,zlib}` -- install dependencies
 
 5. `git clone https://github.com/SimLabs/mapbox-gl-native` -- getting source
 
@@ -45,4 +45,4 @@ If your platform or hybrid application framework isn’t listed here, consider e
 
 5. `cmake -G "MSYS Makefiles"` -- generates make with multiple targets
 
-6. `make mapbox-interface` -- makes the .dll (you can also try mapbox-interface-test to generate executable to see whether it works)
+6. `make mbgl-wrapper -- makes the .dll (you can also try mapbox-interface-test to generate executable to see whether it works)
