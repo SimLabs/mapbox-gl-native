@@ -62,6 +62,6 @@ int main(int argc, char **argv) {
 	std::shared_ptr<mbgl_wrapper::params_t> params(new mbgl_wrapper::params_t {nullptr, TILE_WIDTH, TILE_HEIGHT, &save_buffer});
 
     mbgl_wrapper::init(params.get());
-    mbgl_wrapper::update(0, 0, 0, 1, 1);
+    mbgl_wrapper::update(20, 0, 0, 1, 1);
     mbgl_wrapper::shutdown();
 }

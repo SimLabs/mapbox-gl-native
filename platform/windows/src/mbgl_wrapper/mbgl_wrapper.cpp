@@ -15,6 +15,9 @@
 
 #include "mbgl_wrapper_functions.h"
 
+// for saving
+#include <mbgl/util/image.hpp>
+
 namespace mbgl_wrapper
 {
 
@@ -63,6 +66,58 @@ void shutdown()
     mbgl::Log::Debug(mbgl::Event::General, "Shutdown completed");
 }
 
+const std::string save_path = "C:\\Users\\user\\Desktop\\kek.png";
+const std::string save_path_image = "C:\\Users\\user\\Desktop\\kek_image.png";
+
+void save_buffer(mbgl_wrapper::buffer_t const *buffer) {
+    static bool saved;
+    
+    if (saved) {
+        return;
+    }
+
+    try {
+        std::cerr << "opened stream\n";
+        std::ofstream out(save_path, std::ios::binary);
+        std::size_t width = buffer->width * params.tile_width;
+        std::size_t height = buffer->height * params.tile_height;
+        std::cerr << "trying to save " << width << "x" << height << " image of size " << buffer->buffer_size << "\n";;
+        out << mbgl::encodePNG(mbgl::PremultipliedImage({width, height}, buffer->ptr, buffer->buffer_size));
+        std::cerr << "wrote\n";
+        out.close();
+        saved = true;
+    } catch(std::exception& e) {
+        std::cout << "Error: " << e.what() << std::endl;
+        std::exit(1);
+    }
+    // std::size_t width = buffer->width;
+    // Magick::Image image(width, buffer->height, "RGBA", Magick::CharPixel, buffer->ptr);
+    // image.write("C:\\Users\\user\\Desktop\\kek.png");
+}
+
+void save_image(mbgl::PremultipliedImage &image) {
+    static bool saved;
+    
+    if (saved) {
+        return;
+    }
+
+    try {
+        std::cerr << "opened stream\n";
+        std::ofstream out(save_path_image, std::ios::binary);
+        out << mbgl::encodePNG(image);
+        std::cerr << "wrote\n";
+        out.close();
+        saved = true;
+    } catch(std::exception& e) {
+        std::cout << "Error: " << e.what() << std::endl;
+        std::exit(1);
+    }
+    // std::size_t width = buffer->width;
+    // Magick::Image image(width, buffer->height, "RGBA", Magick::CharPixel, buffer->ptr);
+    // image.write("C:\\Users\\user\\Desktop\\kek.png");
+}
+
 void update(uint32_t zoom, uint32_t x0, uint32_t y0, uint32_t width, uint32_t height)
 {
     uint32_t mbgl_y0 = (1 << zoom) - 1 - y0;
@@ -74,19 +129,14 @@ void update(uint32_t zoom, uint32_t x0, uint32_t y0, uint32_t width, uint32_t he
 
     // getting bounds
     mbgl::Log::Debug(mbgl::Event::Render, "Getting bounds");
-    /* mbgl::CanonicalTileID first(zoom, x0, mbgl_y0);
-     mbgl::CanonicalTileID last(zoom, x0 + width - 1, mbgl_y0 + height - 1); */
-// testing
-    mbgl::CanonicalTileID first(0, 0, 0);
-    mbgl::CanonicalTileID last(0, 0, 0);
-// \testing
+    mbgl::CanonicalTileID first(zoom, x0, mbgl_y0);
+    mbgl::CanonicalTileID last(zoom, x0 + width - 1, mbgl_y0 + height - 1); 
     mbgl::LatLngBounds map_bounds(first);
     map_bounds.extend(mbgl::LatLngBounds(last));
+    map->setLatLngBounds(map_bounds);
 
     // setting position
-    mbgl::LatLng center = map_bounds.center();
-    mbgl::Log::Debug(mbgl::Event::Render, "Setting new center: (%f, %f)", center.latitude(), center.longitude());
-    map->setLatLngZoom(center, zoom);
+    map->jumpTo(map->cameraForLatLngBounds(map_bounds, mbgl::EdgeInsets()));
 
     // rendering
     mbgl::Log::Debug(mbgl::Event::Render, "Rendering");
