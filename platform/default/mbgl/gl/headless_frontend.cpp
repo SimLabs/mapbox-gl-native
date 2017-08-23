@@ -2,6 +2,8 @@
 #include <mbgl/renderer/renderer.hpp>
 #include <mbgl/map/map.hpp>
 #include <mbgl/util/run_loop.hpp>
+#include <mbgl/util/logging.hpp>
+#include <mbgl/util/event.hpp>
 
 namespace mbgl {
 
@@ -21,6 +23,7 @@ HeadlessFrontend::HeadlessFrontend(Size size_, float pixelRatio_, FileSource& fi
         }
     }),
     renderer(std::make_unique<Renderer>(backend, pixelRatio, fileSource, scheduler)) {
+    mbgl::Log::Debug(mbgl::Event::Render, "Initialized headless frontend");
 }
 
 HeadlessFrontend::~HeadlessFrontend() = default;
@@ -66,20 +69,28 @@ PremultipliedImage HeadlessFrontend::readStillImage() {
 }
 
 PremultipliedImage HeadlessFrontend::render(Map& map) {
+    mbgl::Log::Debug(mbgl::Event::Render, "HeadlessFrontend::render -- begin");
     PremultipliedImage result;
 
+    mbgl::Log::Debug(mbgl::Event::Render, "HeadlessFrontend::render -- asking map to render itself");
     map.renderStill([&](std::exception_ptr error) {
+        mbgl::Log::Debug(mbgl::Event::Render, "HeadlessFrontend::render -- executing callback");
         if (error) {
+            mbgl::Log::Debug(mbgl::Event::Render, "HeadlessFrontend::render -- error encountered");
             std::rethrow_exception(error);
         } else {
+            mbgl::Log::Debug(mbgl::Event::Render, "HeadlessFrontend::render -- ok -- reading still image");
             result = backend.readStillImage();
+            mbgl::Log::Debug(mbgl::Event::Render, "HeadlessFrontend::render -- ok -- read still image");
         }
     });
 
+    mbgl::Log::Debug(mbgl::Event::Render, "HeadlessFrontend::render -- waiting for map to render");
     while (!result.valid()) {
         util::RunLoop::Get()->runOnce();
     }
 
+    mbgl::Log::Debug(mbgl::Event::Render, "HeadlessFrontend::render -- done");
     return result;
 }
 

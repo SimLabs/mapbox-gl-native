@@ -29,13 +29,10 @@ namespace mbgl_wrapper
     {
         typedef void (*init_pfn)(params_t const *params);    
         typedef void (*shutdown_pfn)();    
-        typedef void (*update_pfn)(uint32_t zoom, uint32_t x0, uint32_t y0, uint32_t width, uint32_t height, void *request_handle);
+        typedef void (*update_pfn)(uint32_t zoom, uint32_t x0, uint32_t y0, uint32_t width, uint32_t height);
 
         init_pfn          init          = nullptr;
         shutdown_pfn      shutdown      = nullptr;
         update_pfn        update        = nullptr;
     };
-
-
-
 } // namespace mbgl_wrapper

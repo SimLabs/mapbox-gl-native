@@ -1,4 +1,5 @@
 #include <mbgl/gl/headless_display.hpp>
+#include <mbgl/util/logging.hpp>
 
 #include <windows.h>
 
@@ -46,7 +47,9 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 }
 
 HeadlessDisplay::Impl::Impl() {
-    // Window description  
+    mbgl::Log::Debug(mbgl::Event::OpenGL, "Creating display");
+    // Window description
+    mbgl::Log::Debug(mbgl::Event::OpenGL, "Creating display -- Windows window description");
     WNDCLASSEX ex;
     ex.cbSize = sizeof(WNDCLASSEX);
     ex.style = CS_HREDRAW|CS_VREDRAW|CS_OWNDC;
@@ -60,10 +63,12 @@ HeadlessDisplay::Impl::Impl() {
     ex.lpszMenuName = nullptr;
     ex.lpszClassName = "wndclass";
     ex.hIconSm = nullptr;
-     
+
+    mbgl::Log::Debug(mbgl::Event::OpenGL, "Creating display -- Windows window class registration");
     RegisterClassEx(&ex);
      
     // Window creation
+    mbgl::Log::Debug(mbgl::Event::OpenGL, "Creating display -- Windows window creation");
     hwnd = CreateWindowEx(NULL,
         ex.lpszClassName,
         "Window",
@@ -75,25 +80,32 @@ HeadlessDisplay::Impl::Impl() {
         NULL);
     assert(hwnd);
 
+    mbgl::Log::Debug(mbgl::Event::OpenGL, "Creating display -- getting Windows Device Context");
     hdc = GetDC(hwnd);
     assert(hdc);
   
+    mbgl::Log::Debug(mbgl::Event::OpenGL, "Creating display -- choosing Windows Pixel Format");
     iPixelFormat = ChoosePixelFormat(hdc, &pfd);
     if (!iPixelFormat) {
         throw std::runtime_error("Error choosing pixel format: " + std::to_string(GetLastError()));
     }
 
+    mbgl::Log::Debug(mbgl::Event::OpenGL, "Creating display -- setting Windows Pixel Format");
     auto result = SetPixelFormat(hdc, iPixelFormat, &pfd);
     if (result == FALSE) {
         throw std::runtime_error("Error setting pixel format: " + std::to_string(GetLastError()));
     }
+    mbgl::Log::Debug(mbgl::Event::OpenGL, "Created display");
 }
 
 HeadlessDisplay::Impl::~Impl() {
+    mbgl::Log::Debug(mbgl::Event::OpenGL, "Destroying display -- deleting Windows Device Context");
     DeleteDC(hdc);
     hdc = nullptr;
+    mbgl::Log::Debug(mbgl::Event::OpenGL, "Destroying display -- destroying Windows window");
     DestroyWindow(hwnd);
     hwnd = nullptr;
+    mbgl::Log::Debug(mbgl::Event::OpenGL, "Destroyed display");
 }
 
 template <>
