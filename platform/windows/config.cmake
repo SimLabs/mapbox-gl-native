@@ -109,6 +109,9 @@ add_library(mbgl-wrapper SHARED
     platform/windows/src/mbgl_wrapper/mbgl_wrapper_functions.h
     platform/windows/src/mbgl_wrapper/mbgl_wrapper.cpp
     "${PROJECT_BINARY_DIR}/mbgl-wrapper_export.h"
+
+    # Test
+    include/mbgl/util/enum.hpp
 )
 
 target_include_directories(mbgl-wrapper

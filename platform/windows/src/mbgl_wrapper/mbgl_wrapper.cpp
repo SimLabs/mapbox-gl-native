@@ -15,9 +15,6 @@
 
 #include "mbgl_wrapper_functions.h"
 
-// for saving
-#include <mbgl/util/image.hpp>
-
 namespace mbgl_wrapper
 {
 
@@ -29,11 +26,11 @@ std::shared_ptr<mbgl::Map> map;
 
 params_t params;
 
-std::vector<uint8_t> buffer_data;
+std::unique_ptr<uint8_t[]> buffer_data;
 
 void init(params_t const *params_)
 {
-    mbgl::Log::Debug(mbgl::Event::Setup, "Init");
+    mbgl::Log::Info(mbgl::Event::Setup, "Init");
     params = *params_;
     double pixelRatio = 1;
 
@@ -59,70 +56,18 @@ void init(params_t const *params_)
     map->getStyle().loadURL(style_path);
     map->setBearing(0); // north
     map->setPitch(0);   // top-down
-    mbgl::Log::Debug(mbgl::Event::Setup, "Init completed");
+    mbgl::Log::Info(mbgl::Event::Setup, "Init completed");
 }
 
 void shutdown()
 {
-    mbgl::Log::Debug(mbgl::Event::General, "Shutdown");
+    mbgl::Log::Info(mbgl::Event::General, "Shutdown");
     map.reset();
     frontend.reset();
     loop.reset();
     fileSource.reset();
     threadPool.reset();
-    mbgl::Log::Debug(mbgl::Event::General, "Shutdown completed");
-}
-
-const std::string save_path = "C:\\Users\\user\\Desktop\\kek.png";
-const std::string save_path_image = "C:\\Users\\user\\Desktop\\kek_image.png";
-
-void save_buffer(mbgl_wrapper::buffer_t const *buffer) {
-    static bool saved;
-    
-    if (saved) {
-        return;
-    }
-
-    try {
-        std::cerr << "opened stream\n";
-        std::ofstream out(save_path, std::ios::binary);
-        std::size_t width = buffer->width * params.tile_width;
-        std::size_t height = buffer->height * params.tile_height;
-        std::cerr << "trying to save " << width << "x" << height << " image of size " << buffer->buffer_size << "\n";;
-        out << mbgl::encodePNG(mbgl::PremultipliedImage({width, height}, buffer->ptr, buffer->buffer_size));
-        std::cerr << "wrote\n";
-        out.close();
-        saved = true;
-    } catch(std::exception& e) {
-        std::cout << "Error: " << e.what() << std::endl;
-        std::exit(1);
-    }
-    // std::size_t width = buffer->width;
-    // Magick::Image image(width, buffer->height, "RGBA", Magick::CharPixel, buffer->ptr);
-    // image.write("C:\\Users\\user\\Desktop\\kek.png");
-}
-
-void save_image(mbgl::PremultipliedImage &image) {
-    static bool saved;
-    
-    if (saved) {
-        return;
-    }
-
-    try {
-        std::cerr << "opened stream\n";
-        std::ofstream out(save_path_image, std::ios::binary);
-        out << mbgl::encodePNG(image);
-        std::cerr << "wrote\n";
-        out.close();
-        saved = true;
-    } catch(std::exception& e) {
-        std::cout << "Error: " << e.what() << std::endl;
-        std::exit(1);
-    }
-    // std::size_t width = buffer->width;
-    // Magick::Image image(width, buffer->height, "RGBA", Magick::CharPixel, buffer->ptr);
-    // image.write("C:\\Users\\user\\Desktop\\kek.png");
+    mbgl::Log::Info(mbgl::Event::General, "Shutdown completed");
 }
 
 void update(uint32_t zoom, uint32_t x0, uint32_t y0, uint32_t width, uint32_t height)
@@ -130,12 +75,12 @@ void update(uint32_t zoom, uint32_t x0, uint32_t y0, uint32_t width, uint32_t he
     uint32_t mbgl_y0 = (1 << zoom) - 1 - y0;
     // setting size
     mbgl::Size size = { width * params.tile_width, height * params.tile_height };
-    mbgl::Log::Debug(mbgl::Event::Render, "Adjusting map to size %dx%d", size.width, size.height);
+    mbgl::Log::Info(mbgl::Event::Render, "Adjusting map to size %dx%d", size.width, size.height);
     map->setSize(size);
     frontend->setSize(size);
 
     // getting bounds
-    mbgl::Log::Debug(mbgl::Event::Render, "Getting bounds");
+    mbgl::Log::Info(mbgl::Event::Render, "Getting bounds");
     mbgl::CanonicalTileID first(zoom, x0, mbgl_y0);
     mbgl::CanonicalTileID last(zoom, x0 + width - 1, mbgl_y0 + height - 1); 
     mbgl::LatLngBounds map_bounds(first);
@@ -146,9 +91,9 @@ void update(uint32_t zoom, uint32_t x0, uint32_t y0, uint32_t width, uint32_t he
     map->jumpTo(map->cameraForLatLngBounds(map_bounds, mbgl::EdgeInsets()));
 
     // rendering
-    mbgl::Log::Debug(mbgl::Event::Render, "Rendering");
+    mbgl::Log::Info(mbgl::Event::Render, "Rendering");
     mbgl::PremultipliedImage image = frontend->render(*map);
-    mbgl::Log::Debug(mbgl::Event::Render, "Got image of size %dx%d", image.size.width, image.size.height);
+    mbgl::Log::Info(mbgl::Event::Render, "Got image of size %dx%d", image.size.width, image.size.height);
     if (params.buffer_ready_f) {
         buffer_t buffer;
         buffer.zoom = zoom;
@@ -159,15 +104,13 @@ void update(uint32_t zoom, uint32_t x0, uint32_t y0, uint32_t width, uint32_t he
         buffer.bytes_per_pixel = image.channels;
         buffer.buffer_size = image.bytes();
 
-        buffer_data.assign(image.data.get(), image.data.get() + buffer.buffer_size);
-        buffer.ptr = buffer_data.data();
+        buffer_data = std::move(image.data);
+        buffer.ptr = buffer_data.get();
 
-        mbgl::Log::Debug(mbgl::Event::Render, "Finished rendering callback invocation");
+        mbgl::Log::Info(mbgl::Event::Render, "Finished rendering callback invocation");
         params.buffer_ready_f(params.client_handle, &buffer);
-        // log_stream << "Async callback" << std::endl;
-        // loop->invoke(params.buffer_ready_f, params.client_handle, buffer);
     }
-    mbgl::Log::Debug(mbgl::Event::Render, "Update completed");
+    mbgl::Log::Info(mbgl::Event::Render, "Update completed");
 }
 
 } // namespace mbgl_wrapper

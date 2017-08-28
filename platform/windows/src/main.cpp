@@ -59,9 +59,19 @@ void save_buffer(void *, mbgl_wrapper::buffer_t const *buffer) {
 int main(int argc, char **argv) {
 	std::cerr << "ENTRY\n";
 	
-	std::shared_ptr<mbgl_wrapper::params_t> params(new mbgl_wrapper::params_t {nullptr, TILE_WIDTH, TILE_HEIGHT, &save_buffer});
+	std::shared_ptr<mbgl_wrapper::params_t> params(
+        new mbgl_wrapper::params_t {
+            nullptr, 
+            TILE_WIDTH, 
+            TILE_HEIGHT, 
+            &save_buffer, 
+            2,
+            "http://192.168.1.61:8080/", 
+            "http://192.168.1.61:8080/styles/klokantech-basic/style.json"
+        }
+    );
 
     mbgl_wrapper::init(params.get());
-    mbgl_wrapper::update(20, 0, 0, 1, 1);
+    mbgl_wrapper::update(0, 0, 0, 1, 1);
     mbgl_wrapper::shutdown();
 }
