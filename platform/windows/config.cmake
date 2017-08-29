@@ -64,7 +64,7 @@ macro(mbgl_platform_core)
         PRIVATE platform/default/sqlite3.hpp
 
         # Misc
-        PRIVATE platform/windows/src/logging_temp_file.cpp
+        PRIVATE platform/default/logging_stderr.cpp
         PRIVATE platform/default/string_stdlib.cpp
         PRIVATE platform/default/thread.cpp
         PRIVATE platform/default/bidi.cpp
@@ -108,10 +108,9 @@ add_library(mbgl-wrapper SHARED
     platform/windows/src/mbgl_wrapper/mbgl_wrapper.h
     platform/windows/src/mbgl_wrapper/mbgl_wrapper_functions.h
     platform/windows/src/mbgl_wrapper/mbgl_wrapper.cpp
+    platform/windows/src/mbgl_wrapper/logging_to_func.cpp
+    # platform/windows/src/mbgl_wrapper/logging_to_func.h
     "${PROJECT_BINARY_DIR}/mbgl-wrapper_export.h"
-
-    # Test
-    include/mbgl/util/enum.hpp
 )
 
 target_include_directories(mbgl-wrapper
@@ -127,70 +126,16 @@ include(GenerateExportHeader)
 generate_export_header(mbgl-wrapper)
 
 add_executable(mbgl-wrapper-test
-    platform/windows/src/mbgl_wrapper/mbgl_wrapper_functions.h
     platform/windows/src/main.cpp
 )
 
 target_link_libraries(mbgl-wrapper-test
     PRIVATE mbgl-core
     PRIVATE mbgl-wrapper
-    PRIVATE -lMagick++-7.Q16HDRI
-    PRIVATE -lm
-    PRIVATE -lMagickWand-7.Q16HDRI
-    PRIVATE -llcms2
-    PRIVATE -lfreetype
-    PRIVATE -lraqm
-    PRIVATE -lfreetype
-    PRIVATE -llqr-1
-    PRIVATE -lglib-2.0
-    PRIVATE -lintl
-    PRIVATE -lfftw3
-    PRIVATE -lfontconfig
-    PRIVATE -lfreetype
-    PRIVATE -llzma
-    PRIVATE -lbz2
-    PRIVATE -lz
-    PRIVATE -lltdl
-    PRIVATE -lgdi32
-    PRIVATE -lm
-    PRIVATE -lgomp
-    PRIVATE -lm
-    PRIVATE -lMagickCore-7.Q16HDRI
-    PRIVATE -llcms2
-    PRIVATE -lfreetype
-    PRIVATE -lraqm
-    PRIVATE -lfreetype
-    PRIVATE -llqr-1
-    PRIVATE -lglib-2.0
-    PRIVATE -lintl
-    PRIVATE -lfftw3
-    PRIVATE -lfontconfig
-    PRIVATE -lfreetype
-    PRIVATE -llzma
-    PRIVATE -lbz2
-    PRIVATE -lz
-    PRIVATE -lltdl
-    PRIVATE -lgdi32
-    PRIVATE -lm
-    PRIVATE -lgomp
-    PRIVATE -lm
-)
-
-target_compile_options(mbgl-wrapper-test
-    PRIVATE -fopenmp
-    PRIVATE -DMAGICKCORE_HDRI_ENABLE=1
-    PRIVATE -DMAGICKCORE_QUANTUM_DEPTH=16
-    PRIVATE -D_DLL
-    PRIVATE -D_MT
 )
 
 target_include_directories(mbgl-wrapper-test
-    PRIVATE mason_packages/headers/geometry/0.9.2/include/
-    PRIVATE mason_packages/headers/variant/1.1.4/include/
-    PRIVATE include
-    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src
     PRIVATE platform/src/
-    PRIVATE /mingw64/include/ImageMagick-7
 )
 
 macro(mbgl_platform_render)

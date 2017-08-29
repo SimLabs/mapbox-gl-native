@@ -14,6 +14,7 @@
 #include <memory>
 
 #include "mbgl_wrapper_functions.h"
+#include "logging_to_func.h"
 
 namespace mbgl_wrapper
 {
@@ -30,8 +31,9 @@ std::unique_ptr<uint8_t[]> buffer_data;
 
 void init(params_t const *params_)
 {
-    mbgl::Log::Info(mbgl::Event::Setup, "Init");
     params = *params_;
+    mbgl::setLogFunc(params.log_f);
+    mbgl::Log::Info(mbgl::Event::Setup, "Init");
     double pixelRatio = 1;
 
     fileSource = std::make_shared<mbgl::DefaultFileSource>("C:\\temp\\mbgl-cache.db", ".");
@@ -56,6 +58,7 @@ void init(params_t const *params_)
     map->getStyle().loadURL(style_path);
     map->setBearing(0); // north
     map->setPitch(0);   // top-down
+    map->setPrefetchZoomDelta(0); // no prefetch
     mbgl::Log::Info(mbgl::Event::Setup, "Init completed");
 }
 

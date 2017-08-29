@@ -4,35 +4,9 @@
 #include <cstddef>
 #include <memory>
 #include <mbgl/util/image.hpp>
-// #include <Magick++.h>
 #include "mbgl_wrapper/mbgl_wrapper_functions.h"
 
 #pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
-
-// const camera_params_t camera_params = {512, 512, 0, 0, 1, 0, 0, 1};
-
-// const map_params_t map_params = {
-// 	(char*) "http://localhost:8080/styles/klokantech-basic/style.json",
-// 	(char*) "http://localhost:8080/",
-//     // (char*) "C:\\temp\\mbgl-cache.db",
-//     (char*) ":memory:",
-// 	(char*) ".",
-// 	(char*) "",
-// 	false};
-
-// const char *save_path = "C:\\Users\\user\\Desktop\\kek.png";
-
-// int main()
-// {
-// 	std::cerr << "Init\n";
-//     init(&camera_params, &map_params);
-//     std::cerr << "Save\n";
-//     save(save_path);
-//     std::cerr << "Shutdown\n";
-//     shutdown();
-//     std::cerr << "Finished\n";
-//     return 0;
-// }
 
 const int TILE_WIDTH = 512, TILE_HEIGHT = 512;
 const std::string save_path = "C:\\Users\\user\\Desktop\\kek.png";
@@ -51,9 +25,32 @@ void save_buffer(void *, mbgl_wrapper::buffer_t const *buffer) {
         std::cout << "Error: " << e.what() << std::endl;
         std::exit(1);
     }
-    // std::size_t width = buffer->width;
-    // Magick::Image image(width, buffer->height, "RGBA", Magick::CharPixel, buffer->ptr);
-    // image.write("C:\\Users\\user\\Desktop\\kek.png");
+}
+
+std::string log_file = "C:\\temp\\mbgl-log.txt";
+std::ofstream log_stream(log_file);
+
+void write_to_log(mbgl_wrapper::log_severity_t severity, char const *message) {
+    // ignoring debug
+    if (severity == mbgl_wrapper::log_severity_t::ls_debug) {
+        return;
+    }
+    std::string severity_str;
+    switch (severity) {
+        case mbgl_wrapper::log_severity_t::ls_debug:
+            severity_str = "Debug";
+            break;
+        case mbgl_wrapper::log_severity_t::ls_info:
+            severity_str = "Info";
+            break;
+        case mbgl_wrapper::log_severity_t::ls_warning:
+            severity_str = "Warning";
+            break;
+        case mbgl_wrapper::log_severity_t::ls_error:
+            severity_str = "Error";
+            break;
+    }
+    log_stream << "[" << severity_str << "] " << std::string(message) << std::endl;
 }
 
 int main(int argc, char **argv) {
@@ -67,7 +64,8 @@ int main(int argc, char **argv) {
             &save_buffer, 
             2,
             "http://192.168.1.61:8080/", 
-            "http://192.168.1.61:8080/styles/klokantech-basic/style.json"
+            "http://192.168.1.61:8080/styles/klokantech-basic/style.json",
+            &write_to_log
         }
     );
 
