@@ -82,7 +82,7 @@ void update(uint32_t zoom, uint32_t x0, uint32_t y0, uint32_t width, uint32_t he
     // getting bounds
     mbgl::Log::Info(mbgl::Event::Render, "Getting bounds");
     mbgl::CanonicalTileID first(zoom, x0, mbgl_y0);
-    mbgl::CanonicalTileID last(zoom, x0 + width - 1, mbgl_y0 + height - 1); 
+    mbgl::CanonicalTileID last(zoom, x0 + width - 1, mbgl_y0 - height + 1); // minus, because converted coordinate is inverted
     mbgl::LatLngBounds map_bounds(first);
     map_bounds.extend(mbgl::LatLngBounds(last));
     map->setLatLngBounds(map_bounds);
