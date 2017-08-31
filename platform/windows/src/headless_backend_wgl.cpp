@@ -18,14 +18,20 @@ struct WGLImpl : public HeadlessBackend::Impl {
     }
 
     ~WGLImpl() {
-        wglDeleteContext(glContext);
+        mbgl::Log::Debug(mbgl::Event::OpenGL, "Destroying WGLImpl");
+        deactivateContext();
+        if (!wglDeleteContext(glContext)) {
+            mbgl::Log::Error(mbgl::Event::OpenGL, "OpenGL context deletion failed: %d", GetLastError());
+            // throw std::runtime_error("OpenGL context deletion failed.\n");
+        }
         mbgl::Log::Debug(mbgl::Event::OpenGL, "Destructed WGLImpl");
     }
 
     void activateContext() final {
         mbgl::Log::Debug(mbgl::Event::OpenGL, "Activating context");
         if (!wglMakeCurrent(deviceContext, glContext)) {
-            throw std::runtime_error("Switching OpenGL context failed.\n");
+            mbgl::Log::Error(mbgl::Event::OpenGL, "Switching OpenGL context failed: %d\n", GetLastError());
+            // throw std::runtime_error("Switching OpenGL context failed.\n");
         }
         glewInit();
         mbgl::Log::Debug(mbgl::Event::OpenGL, "Activated context");
@@ -33,8 +39,9 @@ struct WGLImpl : public HeadlessBackend::Impl {
 
     void deactivateContext() final {
         mbgl::Log::Debug(mbgl::Event::OpenGL, "Deactivating context");
-        if (!wglMakeCurrent(nullptr, nullptr)) {
-            throw std::runtime_error("Removing OpenGL context failed.\n");
+        if (!wglMakeCurrent(deviceContext, nullptr)) {
+            mbgl::Log::Error(mbgl::Event::OpenGL, "Deactivating OpenGL context failed: %d", GetLastError());
+            // throw std::runtime_error("Deactivating OpenGL context failed.\n");
         }
         mbgl::Log::Debug(mbgl::Event::OpenGL, "Deactivated context");
     }
@@ -50,7 +57,7 @@ gl::ProcAddress HeadlessBackend::initializeExtension(const char* name) {
 
 bool HeadlessBackend::hasDisplay() {
     if (!display) {
-        display.reset(HeadlessDisplay::create());
+        display = HeadlessDisplay::create();
     }
     return bool(display);
 };

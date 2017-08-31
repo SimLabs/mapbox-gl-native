@@ -6,9 +6,16 @@ namespace mbgl {
 
 class HeadlessDisplay {
 public:
-    static HeadlessDisplay *create() {
-        static HeadlessDisplay instance;
-        return &instance;
+    static std::shared_ptr<HeadlessDisplay> create() {
+        static std::weak_ptr<HeadlessDisplay> instance;
+        
+        auto shared = instance.lock();
+        
+        if (!shared) {
+            instance = shared = std::shared_ptr<HeadlessDisplay>(new HeadlessDisplay());
+        }
+        
+        return shared;
     }
     
     ~HeadlessDisplay();
