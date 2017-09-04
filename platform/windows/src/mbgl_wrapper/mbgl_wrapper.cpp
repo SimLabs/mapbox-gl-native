@@ -75,41 +75,56 @@ void shutdown()
 
 void update(uint32_t zoom, uint32_t x0, uint32_t y0, uint32_t width, uint32_t height)
 {
-    uint32_t mbgl_y0 = (1 << zoom) - 1 - y0;
-    // setting size
-    mbgl::Size size = { width * params.tile_width, height * params.tile_height };
-    mbgl::Log::Info(mbgl::Event::Render, "Adjusting map to size %dx%d", size.width, size.height);
-    map->setSize(size);
-    frontend->setSize(size);
+    buffer_t buffer;
+    buffer.zoom = zoom;
+    buffer.x0 = x0;
+    buffer.y0 = y0;
+    buffer.width = width;
+    buffer.height = height;
 
-    // getting bounds
-    mbgl::Log::Info(mbgl::Event::Render, "Getting bounds");
-    mbgl::CanonicalTileID first(zoom, x0, mbgl_y0);
-    mbgl::CanonicalTileID last(zoom, x0 + width - 1, mbgl_y0 - height + 1); // minus, because converted coordinate is inverted
-    mbgl::LatLngBounds map_bounds(first);
-    map_bounds.extend(mbgl::LatLngBounds(last));
-    map->setLatLngBounds(map_bounds);
+    try
+    {
+        uint32_t mbgl_y0 = (1 << zoom) - 1 - y0;
+        // setting size
+        mbgl::Size size = { width * params.tile_width, height * params.tile_height };
+        mbgl::Log::Info(mbgl::Event::Render, "Adjusting map to size %dx%d", size.width, size.height);
+        map->setSize(size);
+        frontend->setSize(size);
 
-    // setting position
-    map->jumpTo(map->cameraForLatLngBounds(map_bounds, mbgl::EdgeInsets()));
+        // getting bounds
+        mbgl::Log::Info(mbgl::Event::Render, "Getting bounds");
+        mbgl::CanonicalTileID first(zoom, x0, mbgl_y0);
+        mbgl::CanonicalTileID last(zoom, x0 + width - 1, mbgl_y0 - height + 1); // minus, because converted coordinate is inverted
+        mbgl::LatLngBounds map_bounds(first);
+        map_bounds.extend(mbgl::LatLngBounds(last));
+        map->setLatLngBounds(map_bounds);
 
-    // rendering
-    mbgl::Log::Info(mbgl::Event::Render, "Rendering");
-    mbgl::PremultipliedImage image = frontend->render(*map);
-    mbgl::Log::Info(mbgl::Event::Render, "Got image of size %dx%d", image.size.width, image.size.height);
-    if (params.buffer_ready_f) {
-        buffer_t buffer;
-        buffer.zoom = zoom;
-        buffer.x0 = x0;
-        buffer.y0 = y0;
-        buffer.width = width;
-        buffer.height = height;
+        // setting position
+        map->jumpTo(map->cameraForLatLngBounds(map_bounds, mbgl::EdgeInsets()));
+
+        // rendering
+        mbgl::Log::Info(mbgl::Event::Render, "Rendering");
+        mbgl::PremultipliedImage image = frontend->render(*map);
+        mbgl::Log::Info(mbgl::Event::Render, "Got image of size %dx%d", image.size.width, image.size.height);
+
         buffer.bytes_per_pixel = image.channels;
         buffer.buffer_size = image.bytes();
 
         buffer_data = std::move(image.data);
         buffer.ptr = buffer_data.get();
+    }
+    catch (std::exception const &e)
+    {
+        mbgl::Log::Error(mbgl::Event::Render, "Update error: %s", e.what());
 
+        buffer.bytes_per_pixel = 0;
+        buffer.buffer_size = 0;
+        buffer.ptr = nullptr;
+    }
+
+
+    if (params.buffer_ready_f) 
+    {
         mbgl::Log::Info(mbgl::Event::Render, "Finished rendering callback invocation");
         params.buffer_ready_f(params.client_handle, &buffer);
     }
