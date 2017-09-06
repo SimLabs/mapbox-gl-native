@@ -108,7 +108,7 @@ public:
         return { size, readFramebuffer(size, format, flip) };
     }
 
-#if not MBGL_USE_GLES2
+#if NOT_MACRO MBGL_USE_GLES2
     template <typename Image>
     void drawPixels(const Image& image) {
         auto format = image.channels == 4 ? TextureFormat::RGBA : TextureFormat::Alpha;
@@ -197,6 +197,17 @@ private:
     std::unique_ptr<extension::ProgramBinary> programBinary;
 #endif
 
+    static VertexArrayState initVertexArrayState(Context *self)
+    {
+        detail::VertexArrayDeleter deleter;
+        deleter.context = self;
+
+        return VertexArrayState(
+            UniqueVertexArray(0, std::move(deleter)), 
+            *self
+        );
+    }
+
 public:
     State<value::ActiveTexture> activeTexture;
     State<value::BindFramebuffer> bindFramebuffer;
@@ -207,12 +218,12 @@ public:
     State<value::BindVertexBuffer> vertexBuffer;
 
     State<value::BindVertexArray, const Context&> bindVertexArray { *this };
-    VertexArrayState globalVertexArrayState { UniqueVertexArray(0, { this }), *this };
+    VertexArrayState globalVertexArrayState;
 
     State<value::PixelStorePack> pixelStorePack;
     State<value::PixelStoreUnpack> pixelStoreUnpack;
 
-#if not MBGL_USE_GLES2
+#if NOT_MACRO MBGL_USE_GLES2
     State<value::PixelZoom> pixelZoom;
     State<value::RasterPos> rasterPos;
     State<value::PixelTransferDepth> pixelTransferDepth;
@@ -238,7 +249,7 @@ private:
     State<value::ClearStencil> clearStencil;
     State<value::LineWidth> lineWidth;
     State<value::BindRenderbuffer> bindRenderbuffer;
-#if not MBGL_USE_GLES2
+#if NOT_MACRO MBGL_USE_GLES2
     State<value::PointSize> pointSize;
 #endif // MBGL_USE_GLES2
 
@@ -250,7 +261,7 @@ private:
     UniqueFramebuffer createFramebuffer();
     UniqueRenderbuffer createRenderbuffer(RenderbufferType, Size size);
     std::unique_ptr<uint8_t[]> readFramebuffer(Size, TextureFormat, bool flip);
-#if not MBGL_USE_GLES2
+#if NOT_MACRO MBGL_USE_GLES2
     void drawPixels(Size size, const void* data, TextureFormat);
 #endif // MBGL_USE_GLES2
 

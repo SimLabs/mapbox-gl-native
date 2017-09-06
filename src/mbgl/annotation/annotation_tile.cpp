@@ -53,7 +53,7 @@ FeatureType AnnotationTileFeature::getType() const {
 optional<Value> AnnotationTileFeature::getValue(const std::string& key) const {
     auto it = data->properties.find(key);
     if (it != data->properties.end()) {
-        return optional<Value>(it->second);
+        return optional<Value>(Value(it->second));
     }
     return optional<Value>();
 }

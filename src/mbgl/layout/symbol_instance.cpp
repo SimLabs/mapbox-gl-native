@@ -31,7 +31,7 @@ SymbolInstance::SymbolInstance(Anchor& anchor_,
     hasIcon(shapedIcon),
 
     // Create the collision features that will be used to check whether this symbol instance can be placed
-    textCollisionFeature(line_, anchor, shapedTextOrientations.second ?: shapedTextOrientations.first, textBoxScale, textPadding, textPlacement, indexedFeature),
+    textCollisionFeature(line_, anchor, shapedTextOrientations.second ? shapedTextOrientations.second : shapedTextOrientations.first, textBoxScale, textPadding, textPlacement, indexedFeature),
     iconCollisionFeature(line_, anchor, shapedIcon, iconBoxScale, iconPadding, iconPlacement, indexedFeature),
     featureIndex(featureIndex_),
     textOffset(textOffset_),

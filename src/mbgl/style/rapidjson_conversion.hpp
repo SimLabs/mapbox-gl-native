@@ -80,21 +80,21 @@ inline optional<Value> toValue(const JSValue& value) {
     switch (value.GetType()) {
         case rapidjson::kNullType:
         case rapidjson::kFalseType:
-            return { false };
+            return optional<Value>(false);
 
         case rapidjson::kTrueType:
-            return { true };
+            return optional<Value>(true);
 
         case rapidjson::kStringType:
-            return { std::string { value.GetString(), value.GetStringLength() } };
+            return optional<Value>(std::string(value.GetString(), value.GetStringLength()));
 
         case rapidjson::kNumberType:
-            if (value.IsUint64()) return { value.GetUint64() };
-            if (value.IsInt64()) return { value.GetInt64() };
-            return { value.GetDouble() };
+            if (value.IsUint64()) return optional<Value> (value.GetUint64() );
+            if (value.IsInt64()) return optional<Value> (value.GetInt64() );
+            return optional<Value>(value.GetDouble());
 
         default:
-            return {};
+            return optional<Value>();
     }
 }
 

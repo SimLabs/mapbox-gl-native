@@ -3,7 +3,7 @@
 namespace mbgl_wrapper
 {
     struct buffer_t;
-    typedef void (*buffer_ready_pfn)(void *client_handle, buffer_t const *buffer);
+    typedef void(*buffer_ready_pfn)(void *client_handle, buffer_t const *buffer);
 
     enum log_severity_t
     {
@@ -13,8 +13,15 @@ namespace mbgl_wrapper
         ls_error,
     };
 
-    typedef void (*log_pfn)(log_severity_t severity, char const *message);
-    
+    typedef void(*log_pfn)(log_severity_t severity, char const *message);
+
+    enum buffer_format_t
+        : uint32_t
+    {
+        bf_rgba,
+        bf_png,
+    };
+
 #pragma pack(push, 1)
     struct buffer_t
     {
@@ -22,7 +29,7 @@ namespace mbgl_wrapper
         uint32_t x0, y0;
         uint32_t width, height;
 
-        uint32_t bytes_per_pixel;
+        buffer_format_t buffer_format;
         uint32_t buffer_size;
 
         uint8_t const *ptr;
@@ -40,18 +47,20 @@ namespace mbgl_wrapper
         char const *style_url = nullptr;
 
         log_pfn log_f = nullptr;
+
+        buffer_format_t desired_buffer_format = bf_rgba;
     };
 #pragma pack(pop)
 
     struct functions_t
     {
-        typedef void (*init_pfn)(params_t const *params);    
-        typedef void (*shutdown_pfn)();    
-        typedef void (*update_pfn)(uint32_t zoom, uint32_t x0, uint32_t y0, uint32_t width, uint32_t height, void *request_handle);
+        typedef void(*init_pfn)(params_t const *params);
+        typedef void(*shutdown_pfn)();
+        typedef void(*update_pfn)(uint32_t zoom, uint32_t x0, uint32_t y0, uint32_t width, uint32_t height, void *request_handle);
 
-        init_pfn          init          = nullptr;
-        shutdown_pfn      shutdown      = nullptr;
-        update_pfn        update        = nullptr;
+        init_pfn          init = nullptr;
+        shutdown_pfn      shutdown = nullptr;
+        update_pfn        update = nullptr;
     };
 
 

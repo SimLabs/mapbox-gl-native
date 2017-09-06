@@ -17,7 +17,7 @@
 namespace mbgl {
 
 using GlyphID = char16_t;
-using GlyphIDs = std::set<GlyphID>;
+using GlyphIDs = std::set<GlyphID, std::less<GlyphID>, std::allocator<GlyphID>>;
     
 // Note: this only works for the BMP
 GlyphRange getGlyphRange(GlyphID glyph);

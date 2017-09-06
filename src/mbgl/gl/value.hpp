@@ -260,7 +260,7 @@ struct PixelStoreUnpack {
     static Type Get();
 };
 
-#if not MBGL_USE_GLES2
+#if NOT_MACRO MBGL_USE_GLES2
 
 struct PointSize {
     using Type = float;

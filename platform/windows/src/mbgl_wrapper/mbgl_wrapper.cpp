@@ -12,6 +12,7 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <sstream>
 
 #include "mbgl_wrapper_functions.h"
 #include "logging_to_func.h"
@@ -28,6 +29,7 @@ std::shared_ptr<mbgl::Map> map;
 params_t params;
 
 std::unique_ptr<uint8_t[]> buffer_data;
+size_t buffer_capacity = 0;
 
 void init(params_t const *params_)
 {
@@ -105,19 +107,54 @@ void update(uint32_t zoom, uint32_t x0, uint32_t y0, uint32_t width, uint32_t he
         // rendering
         mbgl::Log::Info(mbgl::Event::Render, "Rendering");
         mbgl::PremultipliedImage image = frontend->render(*map);
+
         mbgl::Log::Info(mbgl::Event::Render, "Got image of size %dx%d", image.size.width, image.size.height);
 
-        buffer.bytes_per_pixel = image.channels;
-        buffer.buffer_size = image.bytes();
+        buffer.buffer_format = params.desired_buffer_format;
 
-        buffer_data = std::move(image.data);
+        if (params.desired_buffer_format == bf_rgba)
+        {
+            if (image.channels != 4)
+            {
+                std::stringstream ss;
+                ss << "Image has " << image.channels << " channels, 4 expected";
+                throw std::runtime_error(ss.str());
+            }
+            
+            buffer.buffer_size = image.bytes();
+            buffer_data = std::move(image.data);
+            buffer_capacity = image.bytes();
+        }
+        else if (params.desired_buffer_format == bf_png)
+        {
+            auto str = mbgl::encodePNG(image);
+
+            buffer.buffer_size = str.size();
+
+            if (buffer.buffer_size > buffer_capacity)
+            {
+                buffer_data = std::make_unique<uint8_t[]>(buffer.buffer_size);
+                buffer_capacity = buffer.buffer_size;
+            }
+
+            if (buffer.buffer_size > 0)
+                memcpy(buffer_data.get(), str.data(), buffer.buffer_size);
+        }
+        else
+        {
+            std::stringstream ss;
+            ss << "Unsupported buffer format: " << params.desired_buffer_format;
+            throw std::runtime_error(ss.str());
+        }
+
+
         buffer.ptr = buffer_data.get();
     }
     catch (std::exception const &e)
     {
         mbgl::Log::Error(mbgl::Event::Render, "Update error: %s", e.what());
 
-        buffer.bytes_per_pixel = 0;
+        buffer.buffer_format = bf_rgba;
         buffer.buffer_size = 0;
         buffer.ptr = nullptr;
     }

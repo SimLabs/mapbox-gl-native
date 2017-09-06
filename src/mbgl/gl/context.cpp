@@ -23,17 +23,17 @@ static_assert(underlying_type(DataType::Integer) == GL_INT, "OpenGL type mismatc
 static_assert(underlying_type(DataType::UnsignedInteger) == GL_UNSIGNED_INT, "OpenGL type mismatch");
 static_assert(underlying_type(DataType::Float) == GL_FLOAT, "OpenGL type mismatch");
 
-#if not MBGL_USE_GLES2
+#if NOT_MACRO MBGL_USE_GLES2
 static_assert(underlying_type(RenderbufferType::RGBA) == GL_RGBA8, "OpenGL type mismatch");
 #else
 static_assert(underlying_type(RenderbufferType::RGBA) == GL_RGBA8_OES, "OpenGL type mismatch");
 #endif // MBGL_USE_GLES2
-#if not MBGL_USE_GLES2
+#if NOT_MACRO MBGL_USE_GLES2
 static_assert(underlying_type(RenderbufferType::DepthStencil) == GL_DEPTH24_STENCIL8, "OpenGL type mismatch");
 #else
 static_assert(underlying_type(RenderbufferType::DepthStencil) == GL_DEPTH24_STENCIL8_OES, "OpenGL type mismatch");
 #endif // MBGL_USE_GLES2
-#if not MBGL_USE_GLES2
+#if NOT_MACRO MBGL_USE_GLES2
 static_assert(underlying_type(RenderbufferType::DepthComponent) == GL_DEPTH_COMPONENT, "OpenGL type mismatch");
 #else
 static_assert(underlying_type(RenderbufferType::DepthComponent) == GL_DEPTH_COMPONENT16, "OpenGL type mismatch");
@@ -84,7 +84,14 @@ static_assert(underlying_type(BufferUsage::DynamicDraw) == GL_DYNAMIC_DRAW, "Ope
 
 static_assert(std::is_same<BinaryProgramFormat, GLenum>::value, "OpenGL type mismatch");
 
-Context::Context() = default;
+
+
+
+
+Context::Context()
+    : globalVertexArrayState(initVertexArrayState(this))
+{
+}
 
 Context::~Context() {
     reset();
@@ -349,7 +356,7 @@ std::unique_ptr<uint8_t[]> Context::readFramebuffer(const Size size, const Textu
     return data;
 }
 
-#if not MBGL_USE_GLES2
+#if NOT_MACRO MBGL_USE_GLES2
 void Context::drawPixels(const Size size, const void* data, TextureFormat format) {
     pixelStoreUnpack = { 1 };
     if (format != TextureFormat::RGBA) {
@@ -561,7 +568,7 @@ void Context::setDirtyState() {
     activeTexture.setDirty();
     pixelStorePack.setDirty();
     pixelStoreUnpack.setDirty();
-#if not MBGL_USE_GLES2
+#if NOT_MACRO MBGL_USE_GLES2
     pointSize.setDirty();
     pixelZoom.setDirty();
     rasterPos.setDirty();
@@ -602,7 +609,7 @@ void Context::clear(optional<mbgl::Color> color,
     MBGL_CHECK_ERROR(glClear(mask));
 }
 
-#if not MBGL_USE_GLES2
+#if NOT_MACRO MBGL_USE_GLES2
 void Context::setDrawMode(const Points& points) {
     pointSize = points.pointSize;
 }

@@ -639,7 +639,7 @@ void Map::setDebug(MapDebugOptions debugOptions) {
 }
 
 void Map::cycleDebugOptions() {
-#if not MBGL_USE_GLES2
+#if NOT_MACRO MBGL_USE_GLES2
     if (impl->debugOptions & MapDebugOptions::StencilClip)
         impl->debugOptions = MapDebugOptions::NoDebug;
     else if (impl->debugOptions & MapDebugOptions::Overdraw)
