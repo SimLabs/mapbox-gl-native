@@ -55,9 +55,7 @@ struct Watch {
 };
 
 RunLoop* RunLoop::Get() {
-    mbgl::Log::Debug(mbgl::Event::General, "RunLoop::Get -- getting RunLoop");
     RunLoop *loop = current.get();
-    mbgl::Log::Debug(mbgl::Event::General, "RunLoop::Get -- got loop %d", loop);
     return loop;
 }
 
@@ -83,7 +81,6 @@ public:
 };
 
 RunLoop::RunLoop(Type type) : impl(std::make_unique<Impl>()) {
-    mbgl::Log::Debug(mbgl::Event::General, "Construction of RunLoop %x", this);
     switch (type) {
     case Type::New:
         impl->loop = new uv_loop_t;
@@ -106,11 +103,9 @@ RunLoop::RunLoop(Type type) : impl(std::make_unique<Impl>()) {
 
     current.set(this);
     impl->async = std::make_unique<AsyncTask>(std::bind(&RunLoop::process, this));
-    mbgl::Log::Debug(mbgl::Event::General, "Constructed RunLoop %x", this);
 }
 
 RunLoop::~RunLoop() {
-    mbgl::Log::Debug(mbgl::Event::General, "Destruction of RunLoop %x", this);
     current.set(nullptr);
 
     // Close the dummy handle that we have
@@ -132,7 +127,6 @@ RunLoop::~RunLoop() {
         assert(false && "Failed to close loop.");
     }
     delete impl->loop;
-    mbgl::Log::Debug(mbgl::Event::General, "Destroyed RunLoop %x", this);
 }
 
 LOOP_HANDLE RunLoop::getLoopHandle() {
@@ -152,12 +146,9 @@ void RunLoop::run() {
 }
 
 void RunLoop::runOnce() {
-    mbgl::Log::Debug(mbgl::Event::General, "RunLoop::runOnce -- verifying thread");
     MBGL_VERIFY_THREAD(tid);
 
-    mbgl::Log::Debug(mbgl::Event::General, "RunLoop::runOnce -- uv_run");
     uv_run(impl->loop, UV_RUN_NOWAIT);
-    mbgl::Log::Debug(mbgl::Event::General, "RunLoop::runOnce -- ran once");
 }
 
 void RunLoop::stop() {
