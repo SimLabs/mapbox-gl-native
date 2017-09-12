@@ -8,6 +8,12 @@ namespace mbgl {
 namespace style {
 namespace conversion {
 
+template<typename T>
+optional<Filter> make_optional_filter(T &&src)
+{
+    return optional<Filter>(std::forward<T>(src));
+}
+
 template <>
 struct Converter<Filter> {
 public:
@@ -97,10 +103,10 @@ private:
             return {};
         } else {
             return (*identifier).match(
-                [] (uint64_t t) -> optional<FeatureIdentifier> { return { t }; },
-                [] ( int64_t t) -> optional<FeatureIdentifier> { return { t }; },
-                [] (  double t) -> optional<FeatureIdentifier> { return { t }; },
-                [] (const std::string& t) -> optional<FeatureIdentifier> { return { t }; },
+                [] (uint64_t t) -> optional<FeatureIdentifier> { return make_my_optional( t ); },
+                [] ( int64_t t) -> optional<FeatureIdentifier> { return make_my_optional( t ); },
+                [] (  double t) -> optional<FeatureIdentifier> { return make_my_optional( t ); },
+                [] (const std::string& t) -> optional<FeatureIdentifier> { return make_my_optional( t ); },
                 [&] (const auto&) -> optional<FeatureIdentifier> {
                     error = { "filter expression value must be a boolean, number, or string" };
                     return {};
@@ -122,9 +128,9 @@ private:
         }
 
         if (*key == "$id") {
-            return { IdentifierFilterType {} };
+            return make_optional_filter(IdentifierFilterType {});
         } else {
-            return { FilterType { *key } };
+            return make_optional_filter(FilterType { *key });
         }
     }
 
@@ -147,7 +153,7 @@ private:
                 return {};
             }
 
-            return { TypeFilterType { *filterValue } };
+            return make_optional_filter(TypeFilterType { *filterValue });
 
         } else if (*key == "$id") {
             optional<FeatureIdentifier> filterValue = toFeatureIdentifier(arrayMember(value, 2), error);
@@ -155,7 +161,7 @@ private:
                 return {};
             }
 
-            return { IdentifierFilterType { *filterValue } };
+            return make_optional_filter(IdentifierFilterType { *filterValue });
 
         } else {
             optional<Value> filterValue = normalizeValue(toValue(arrayMember(value, 2)), error);
@@ -163,7 +169,7 @@ private:
                 return {};
             }
 
-            return { FilterType { *key, *filterValue } };
+            return make_optional_filter(FilterType { *key, *filterValue });
         }
     }
 
@@ -185,7 +191,7 @@ private:
             return {};
         }
 
-        return { FilterType { *key, *filterValue } };
+        return make_optional_filter(FilterType { *key, *filterValue });
     }
 
     template <class FilterType, class TypeFilterType, class IdentifierFilterType, class V>
@@ -211,7 +217,7 @@ private:
                 values.push_back(*filterValue);
             }
 
-            return { TypeFilterType { std::move(values) } };
+            return make_optional_filter(TypeFilterType { std::move(values) });
 
         } else if (*key == "$id") {
             std::vector<FeatureIdentifier> values;
@@ -223,7 +229,7 @@ private:
                 values.push_back(*filterValue);
             }
 
-            return { IdentifierFilterType { std::move(values) } };
+            return make_optional_filter(IdentifierFilterType { std::move(values) });
 
         } else {
             std::vector<Value> values;
@@ -235,7 +241,7 @@ private:
                 values.push_back(*filterValue);
             }
 
-            return { FilterType { *key, std::move(values) } };
+            return make_optional_filter(FilterType { *key, std::move(values) });
         }
     }
 
@@ -250,7 +256,7 @@ private:
             filters.push_back(*element);
         }
 
-        return { FilterType { std::move(filters) } };
+        return make_optional_filter(FilterType { std::move(filters) });
     }
 };
 

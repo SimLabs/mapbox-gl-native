@@ -1,3 +1,5 @@
+#if !TEMPORARILY_DISABLED
+
 #include <mbgl/util/timer.hpp>
 
 #include <mbgl/util/run_loop.hpp>
@@ -71,3 +73,5 @@ void Timer::stop() {
 
 } // namespace util
 } // namespace mbgl
+
+#endif //!TEMPORARILY_DISABLED

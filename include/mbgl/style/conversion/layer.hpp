@@ -189,7 +189,7 @@ private:
             layer->setFilter(*filter);
         }
 
-        return { std::move(layer) };
+        return make_my_optional(std::move(layer));
     }
 
     template <class V>
@@ -206,12 +206,12 @@ private:
             return {};
         }
 
-        return { std::make_unique<RasterLayer>(id, *source) };
+        return make_my_optional(std::make_unique<RasterLayer>(id, *source));
     }
 
     template <class V>
     optional<std::unique_ptr<Layer>> convertBackgroundLayer(const std::string& id, const V&, Error&) const {
-        return { std::make_unique<BackgroundLayer>(id) };
+        return make_my_optional(std::make_unique<BackgroundLayer>(id));
     }
 };
 

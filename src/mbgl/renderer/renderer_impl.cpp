@@ -189,7 +189,7 @@ void Renderer::Impl::doRender(PaintParameters& parameters) {
         }
     }
 
-#if NOT_MACRO MBGL_USE_GLES2 and not defined(NDEBUG)
+#if NOT_MACRO MBGL_USE_GLES2 and NOT_MACRO defined(NDEBUG)
     // Render tile clip boundaries, using stencil buffer to calculate fill color.
     if (parameters.debugOptions & MapDebugOptions::StencilClip) {
         parameters.context.setStencilMode(gl::StencilMode::disabled());
@@ -291,7 +291,7 @@ void Renderer::Impl::doRender(PaintParameters& parameters) {
         }
     }
 
-#if NOT_MACRO MBGL_USE_GLES2 and not defined(NDEBUG)
+#if NOT_MACRO MBGL_USE_GLES2 and NOT_MACRO defined(NDEBUG)
     // Render the depth buffer.
     if (parameters.debugOptions & MapDebugOptions::DepthBuffer) {
         parameters.context.setStencilMode(gl::StencilMode::disabled());

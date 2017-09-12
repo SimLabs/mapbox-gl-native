@@ -51,7 +51,7 @@ public:
 
     // Enabled for Objects with a constructor taking ActorRef<Object> as the first parameter
 
-#if 0
+#if !TEMPORARILY_DISABLED
     template <typename U = Object, class... Args,
             typename std::enable_if<std::is_constructible<U, ActorRef<Object>, Args...>::value>::type...>
     Actor(Scheduler& scheduler, Args&&... args_)
@@ -66,14 +66,20 @@ public:
             : mailbox(std::make_shared<Mailbox>(scheduler)),
               object(std::forward<Args>(args_)...) {
     }
+
+
 #else
-    // Enabled for plain Objects
-    template <typename U = Object, class... Args>
+
+    template <class... Args>
     Actor(Scheduler& scheduler, Args&&... args_)
-        : mailbox(std::make_shared<Mailbox>(scheduler))
-        , object(std::forward<Args>(args_)...) 
+            : mailbox(std::make_shared<Mailbox>(scheduler))
     {
+        if constexpr (std::is_constructible<Object, ActorRef<Object>, Args...>::value)
+            object = in_place(self(), std::forward<Args>(args_)...);
+        else
+            object = in_place(std::forward<Args>(args_)...);
     }
+
 
 #endif
 
@@ -83,7 +89,7 @@ public:
 
     template <typename Fn, class... Args>
     void invoke(Fn fn, Args&&... args) {
-        mailbox->push(actor::makeMessage(object, fn, std::forward<Args>(args)...));
+        mailbox->push(actor::makeMessage(*object, fn, std::forward<Args>(args)...));
     }
 
     template <typename Fn, class... Args>
@@ -93,12 +99,12 @@ public:
 
         std::promise<ResultType> promise;
         auto future = promise.get_future();
-        mailbox->push(actor::makeMessage(std::move(promise), object, fn, std::forward<Args>(args)...));
+        mailbox->push(actor::makeMessage(std::move(promise), *object, fn, std::forward<Args>(args)...));
         return future;
     }
 
     ActorRef<std::decay_t<Object>> self() {
-        return ActorRef<std::decay_t<Object>>(object, mailbox);
+        return ActorRef<std::decay_t<Object>>(*object, mailbox);
     }
 
     operator ActorRef<std::decay_t<Object>>() {
@@ -107,7 +113,7 @@ public:
 
 private:
     std::shared_ptr<Mailbox> mailbox;
-    Object object;
+    optional<Object> object;
 };
 
 } // namespace mbgl

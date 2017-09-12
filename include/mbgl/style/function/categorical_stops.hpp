@@ -12,7 +12,9 @@ namespace style {
 
 class CategoricalValue : public variant<bool, int64_t, std::string> {
 public:
-    using variant<bool, int64_t, std::string>::variant;
+    //using variant<bool, int64_t, std::string>::variant;
+
+    FORWARD_CTOR(CategoricalValue, variant)
 };
 
 template <class T>

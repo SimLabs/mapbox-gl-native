@@ -262,7 +262,7 @@ using FilterBase = variant<
 
 class Filter : public FilterBase {
 public:
-    using FilterBase::FilterBase;
+    FORWARD_CTOR(Filter, FilterBase)
 
     bool operator()(const Feature&) const;
 

@@ -36,7 +36,7 @@ struct CameraOptions {
     optional<double> pitch;
 };
 
-constexpr bool operator==(const CameraOptions& a, const CameraOptions& b) {
+inline bool operator==(const CameraOptions& a, const CameraOptions& b) {
     return a.center == b.center
         && a.padding == b.padding
         && a.anchor == b.anchor
@@ -45,7 +45,7 @@ constexpr bool operator==(const CameraOptions& a, const CameraOptions& b) {
         && a.pitch == b.pitch;
 }
 
-constexpr bool operator!=(const CameraOptions& a, const CameraOptions& b) {
+inline bool operator!=(const CameraOptions& a, const CameraOptions& b) {
     return !(a == b);
 }
 

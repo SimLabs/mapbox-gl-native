@@ -12,6 +12,8 @@
 #include <mbgl/util/logging.hpp>
 #include <mbgl/util/constants.hpp>
 
+#if !TEMPORARILY_DISABLED
+
 namespace mbgl {
 
 using namespace style;
@@ -212,3 +214,5 @@ void RenderImageSource::dumpDebugLogs() const {
 }
 
 } // namespace mbgl
+
+#endif // !TEMPORARILY_DISABLED

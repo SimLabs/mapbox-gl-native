@@ -20,13 +20,13 @@ struct Converter<PropertyValue<T>> {
             if (!function) {
                 return {};
             }
-            return { *function };
+            return optional<PropertyValue<T>>(*function);
         } else {
             optional<T> constant = convert<T>(value, error);
             if (!constant) {
                 return {};
             }
-            return { *constant };
+            return optional<PropertyValue<T>>(*constant);
         }
     }
 };

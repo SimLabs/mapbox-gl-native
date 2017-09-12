@@ -5,6 +5,7 @@ namespace mbgl {
 
 using namespace style;
 
+#if !TEMPORARILY_DISABLED    
 MBGL_DEFINE_ENUM(SourceType, {
     { SourceType::Vector, "vector" },
     { SourceType::Raster, "raster" },
@@ -94,5 +95,7 @@ MBGL_DEFINE_ENUM(LightAnchorType, {
     { LightAnchorType::Map, "map" },
     { LightAnchorType::Viewport, "viewport" }
 });
+
+#endif
 
 } // namespace mbgl

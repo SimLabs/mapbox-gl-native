@@ -15,6 +15,8 @@ public:
     static optional<T> toEnum(const std::string&);
 };
 
+
+#if !TEMPORARILY_DISABLED    
 #define MBGL_DEFINE_ENUM(T, values...)                                          \
                                                                                 \
 static const constexpr std::pair<const T, const char *> T##_names[] = values;   \
@@ -32,5 +34,7 @@ optional<T> Enum<T>::toEnum(const std::string& s) {                             
         [&] (const auto& v) { return s == v.second; });                         \
     return it == std::end(T##_names) ? optional<T>() : it->first;               \
 }
+
+#endif // !TEMPORARILY_DISABLED    
 
 } // namespace mbgl

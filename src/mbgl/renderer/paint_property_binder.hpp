@@ -276,15 +276,21 @@ struct InterpolationUniform : gl::UniformScalar<InterpolationUniform<Attr>, floa
 template <class Ps>
 class PaintPropertyBinders;
 
+
 template <class... Ps>
 class PaintPropertyBinders<TypeList<Ps...>> {
 public:
     template <class P>
     using Binder = PaintPropertyBinder<typename P::Type, typename P::Attribute::Type>;
+    
+    template<class P>
+    using BinderUPtr = std::shared_ptr<void>;
 
     using Binders = IndexedTuple<
         TypeList<Ps...>,
-        TypeList<std::unique_ptr<Binder<Ps>>...>>;
+        TypeList<BinderUPtr<Ps>...>>;
+
+
 
     template <class EvaluatedProperties>
     PaintPropertyBinders(const EvaluatedProperties& properties, float z)
@@ -297,18 +303,31 @@ public:
 
     void populateVertexVectors(const GeometryTileFeature& feature, std::size_t length) {
         util::ignore({
-            (binders.template get<Ps>()->populateVertexVector(feature, length), 0)...
+            (get_binder<Ps>(binders.template get<Ps>())->populateVertexVector(feature, length), 0)...
         });
     }
 
+private:
+    template<typename P>
+    static Binder<P>* get_binder(std::shared_ptr<void> const &ptr) 
+    {
+        return static_cast<Binder<P>*>(ptr.get());
+    }
+
+public:
+
     void upload(gl::Context& context) {
         util::ignore({
-            (binders.template get<Ps>()->upload(context), 0)...
+
+            (get_binder<Ps>(binders.template get<Ps>())->upload(context), 0)...
         });
     }
 
     template <class P>
-    using Attribute = ZoomInterpolatedAttribute<typename P::Attribute>;
+    using InnerAttribute = typename P::Attribute;
+    
+    template <class P>
+    using Attribute = ZoomInterpolatedAttribute<InnerAttribute<P>>;
 
     using Attributes = gl::Attributes<Attribute<Ps>...>;
     using AttributeBindings = typename Attributes::Bindings;
@@ -316,7 +335,7 @@ public:
     template <class EvaluatedProperties>
     AttributeBindings attributeBindings(const EvaluatedProperties& currentProperties) const {
         return AttributeBindings {
-            binders.template get<Ps>()->attributeBinding(currentProperties.template get<Ps>())...
+            get_binder<Ps>(binders.template get<Ps>())->attributeBinding(currentProperties.template get<Ps>())...
         };
     }
 
@@ -328,17 +347,17 @@ public:
         (void)currentZoom; // Workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=56958
         return UniformValues {
             typename InterpolationUniform<typename Ps::Attribute>::Value {
-                binders.template get<Ps>()->interpolationFactor(currentZoom)
+                get_binder<Ps>(binders.template get<Ps>())->interpolationFactor(currentZoom)
             }...,
             typename Ps::Uniform::Value {
-                binders.template get<Ps>()->uniformValue(currentProperties.template get<Ps>())
+                get_binder<Ps>(binders.template get<Ps>())->uniformValue(currentProperties.template get<Ps>())
             }...
         };
     }
 
     template <class P>
     const auto& statistics() const {
-        return binders.template get<P>()->statistics;
+        return get_binder<P>(binders.template get<P>())->statistics;
     }
 
 

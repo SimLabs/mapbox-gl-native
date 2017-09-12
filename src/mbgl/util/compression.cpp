@@ -1,3 +1,5 @@
+#if !TEMPORARILY_DISABLED
+
 #include <mbgl/util/compression.hpp>
 
 #include <zlib.h>
@@ -98,3 +100,5 @@ std::string decompress(const std::string &raw) {
 }
 } // namespace util
 } // namespace mbgl
+
+#endif // !TEMPORARILY_DISABLED

@@ -1,3 +1,5 @@
+#if !TEMPORARILY_DISABLED
+
 #include <mbgl/util/run_loop.hpp>
 #include <mbgl/util/async_task.hpp>
 #include <mbgl/util/thread_local.hpp>
@@ -222,3 +224,5 @@ void RunLoop::removeWatch(int fd) {
 
 } // namespace util
 } // namespace mbgl
+
+#endif //!TEMPORARILY_DISABLED

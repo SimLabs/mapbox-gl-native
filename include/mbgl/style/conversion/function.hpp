@@ -105,17 +105,17 @@ struct Converter<CategoricalValue> {
     optional<CategoricalValue> operator()(const V& value, Error& error) const {
         auto b = toBool(value);
         if (b) {
-            return { *b };
+            return optional<CategoricalValue>(*b );
         }
 
         auto n = toNumber(value);
         if (n) {
-            return { int64_t(*n) };
+            return optional<CategoricalValue>( int64_t(*n) );
         }
 
         auto s = toString(value);
         if (s) {
-            return { *s };
+            return optional<CategoricalValue>( *s );
         }
 
         error = { "stop domain value must be a number, string, or boolean" };
@@ -222,7 +222,7 @@ optional<optional<T>> convertDefaultValue(const V& value, Error& error) {
         return {};
     }
 
-    return { *defaultValue };
+    return make_my_optional(*defaultValue );
 }
 
 template <class T>

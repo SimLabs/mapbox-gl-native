@@ -3,6 +3,8 @@
 
 namespace mbgl {
 
+#if !TEMPORARILY_DISABLED
+
 MBGL_DEFINE_ENUM(EventSeverity, {
     { EventSeverity::Debug, "DEBUG" },
     { EventSeverity::Info, "INFO" },
@@ -30,5 +32,7 @@ MBGL_DEFINE_ENUM(Event, {
     { Event::Glyph, "Glyph" },
     { Event(-1), "Unknown" },
 });
+
+#endif
 
 } // namespace mbgl

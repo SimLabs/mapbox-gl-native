@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <cstdint>
+#include <tuple>
 
 namespace mbgl {
 
@@ -31,6 +32,10 @@ public:
     friend bool operator==(const Tileset& lhs, const Tileset& rhs) {
         return std::tie(lhs.tiles, lhs.zoomRange, lhs.attribution, lhs.scheme)
             == std::tie(rhs.tiles, rhs.zoomRange, rhs.attribution, rhs.scheme);
+    }
+    
+    friend bool operator!=(const Tileset& lhs, const Tileset& rhs) {
+        return !(lhs == rhs);
     }
 };
 

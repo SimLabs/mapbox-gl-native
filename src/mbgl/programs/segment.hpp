@@ -35,6 +35,22 @@ public:
     //   * when two fill layers have the same layout properties, but one
     //     uses fill-color and the other uses fill-pattern
     mutable std::map<std::string, gl::VertexArray> vertexArrays;
+
+    Segment(Segment const &rhs)
+        : Segment(rhs.vertexOffset, rhs.indexOffset, rhs.vertexLength, rhs.indexLength)
+    {
+    }
+
+    Segment& operator=(Segment const &rhs)
+    {
+        vertexOffset = rhs.vertexOffset;
+        indexOffset  = rhs.indexOffset;
+        vertexLength = rhs.vertexLength;
+        indexLength  = rhs.indexLength;
+        vertexArrays.clear();
+
+        return *this;
+    }
 };
 
 template <class Attributes>

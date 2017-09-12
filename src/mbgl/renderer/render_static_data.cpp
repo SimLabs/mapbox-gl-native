@@ -1,6 +1,8 @@
 #include <mbgl/renderer/render_static_data.hpp>
 #include <mbgl/programs/program_parameters.hpp>
 
+#if !TEMPORARILY_DISABLED
+
 namespace mbgl {
 
 static gl::VertexVector<FillLayoutVertex> tileVertices() {
@@ -65,3 +67,5 @@ RenderStaticData::RenderStaticData(gl::Context& context, float pixelRatio, const
 }
 
 } // namespace mbgl
+
+#endif // !TEMPORARILY_DISABLED

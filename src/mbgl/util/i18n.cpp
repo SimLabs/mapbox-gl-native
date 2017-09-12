@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <map>
 
+
 namespace {
 
 /** Defines a function that returns true if a codepoint is in a named block.
@@ -300,6 +301,7 @@ DEFINE_IS_IN_UNICODE_BLOCK(HalfwidthandFullwidthForms, 0xFF00, 0xFFEF)
 // DEFINE_IS_IN_UNICODE_BLOCK(SupplementaryPrivateUseAreaB, 0x100000, 0x10FFFF)
 
 const std::map<char16_t, char16_t> verticalPunctuation = {
+
     { u'!', u'︕' },  { u'#', u'＃' },  { u'$', u'＄' },  { u'%', u'％' },  { u'&', u'＆' },
     { u'(', u'︵' },  { u')', u'︶' },  { u'*', u'＊' },  { u'+', u'＋' },  { u',', u'︐' },
     { u'-', u'︲' },  { u'.', u'・' },  { u'/', u'／' },  { u':', u'︓' },  { u';', u'︔' },
@@ -317,6 +319,7 @@ const std::map<char16_t, char16_t> verticalPunctuation = {
     { u'＞', u'﹀' }, { u'？', u'︖' }, { u'［', u'﹇' }, { u'］', u'﹈' }, { u'＿', u'︳' },
     { u'｛', u'︷' }, { u'｜', u'―' },  { u'｝', u'︸' }, { u'｟', u'︵' }, { u'｠', u'︶' },
     { u'｡', u'︒' },  { u'｢', u'﹁' },  { u'｣', u'﹂' },
+
 };
 } // namespace
 

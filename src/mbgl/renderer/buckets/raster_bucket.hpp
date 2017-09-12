@@ -36,6 +36,10 @@ public:
 
     optional<gl::VertexBuffer<RasterLayoutVertex>> vertexBuffer;
     optional<gl::IndexBuffer<gl::Triangles>> indexBuffer;
+
+    RasterBucket(RasterBucket const &) = delete;
+    RasterBucket& operator=(RasterBucket const &) = delete;
+
 };
 
 } // namespace mbgl

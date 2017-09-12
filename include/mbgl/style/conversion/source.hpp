@@ -63,7 +63,7 @@ private:
             if (!tileset) {
                 return {};
             }
-            return { *tileset };
+            return make_my_optional(*tileset);
         }
 
         optional<std::string> url = toString(*urlVal);
@@ -72,7 +72,7 @@ private:
             return {};
         }
 
-        return { *url };
+        return make_my_optional(*url);
     }
 
     template <class V>
@@ -95,7 +95,7 @@ private:
             tileSize = *size;
         }
 
-        return { std::make_unique<RasterSource>(id, std::move(*urlOrTileset), tileSize) };
+        return make_my_optional(std::make_unique<RasterSource>(id, std::move(*urlOrTileset), tileSize));
     }
 
     template <class V>
@@ -107,7 +107,7 @@ private:
             return {};
         }
 
-        return { std::make_unique<VectorSource>(id, std::move(*urlOrTileset)) };
+        return make_my_optional(std::make_unique<VectorSource>(id, std::move(*urlOrTileset)));
     }
 
     template <class V>
@@ -140,7 +140,7 @@ private:
             return {};
         }
 
-        return { std::move(result) };
+        return make_my_optional(std::move(result));
     }
     
     template <class V>
@@ -181,7 +181,7 @@ private:
         auto result = std::make_unique<ImageSource>(id, coordinates);
         result->setURL(*urlString);
 
-        return { std::move(result) };
+        return make_my_optional(std::move(result));
     }
 };
 
