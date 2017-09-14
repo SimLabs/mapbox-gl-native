@@ -27,6 +27,7 @@
     #include <QtGui/qopengl.h>
 #else
     #define GL_GLEXT_PROTOTYPES
+    #define GLEW_STATIC
     #include <GL/glew.h>
     // #include <GL/gl.h>
     //#include <GL/glext.h>

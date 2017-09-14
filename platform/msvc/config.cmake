@@ -1,3 +1,7 @@
+link_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}/platform/msvc/ext/lib
+)
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /FIvs_compat.h /std:c++latest /bigobj")
 
 macro(mbgl_platform_core)
@@ -54,10 +58,10 @@ macro(mbgl_platform_core)
 #        PRIVATE platform/default/sqlite3.hpp
 
         # Misc
-        PRIVATE platform/default/logging_stderr.cpp
-        PRIVATE platform/default/string_stdlib.cpp
+#        PRIVATE platform/default/logging_stderr.cpp
+#        PRIVATE platform/default/string_stdlib.cpp
 #        PRIVATE platform/default/thread.cpp
-        PRIVATE platform/default/bidi.cpp
+#        PRIVATE platform/default/bidi.cpp
 #        PRIVATE platform/default/thread_local.cpp
         PRIVATE platform/default/utf.cpp
         
@@ -103,11 +107,11 @@ include_directories(
 )
 
 add_library(mbgl-wrapper SHARED
-    platform/windows/src/mbgl_wrapper/mbgl_wrapper.h
-    platform/windows/src/mbgl_wrapper/mbgl_wrapper_functions.h
-    platform/windows/src/mbgl_wrapper/mbgl_wrapper.cpp
-    platform/windows/src/mbgl_wrapper/logging_to_func.cpp
-    # platform/windows/src/mbgl_wrapper/logging_to_func.h
+    platform/msvc/src/mbgl_wrapper/mbgl_wrapper.h
+    platform/msvc/src/mbgl_wrapper/mbgl_wrapper_functions.h
+    platform/msvc/src/mbgl_wrapper/mbgl_wrapper.cpp
+    platform/msvc/src/mbgl_wrapper/logging_to_func.cpp
+    platform/msvc/src/mbgl_wrapper/logging_to_func.h
     "${PROJECT_BINARY_DIR}/mbgl-wrapper_export.h"
 )
 
@@ -115,9 +119,12 @@ target_include_directories(mbgl-wrapper
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
+SET(GLEW_LIB glew32sd.lib)
+
 target_link_libraries(mbgl-wrapper
     PRIVATE mbgl-core
     PRIVATE mbgl-loop-uv
+    PRIVATE ${GLEW_LIB}
 )
 
 include(GenerateExportHeader)
