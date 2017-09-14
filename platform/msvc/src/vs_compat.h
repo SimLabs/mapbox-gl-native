@@ -9,10 +9,6 @@
 
 #ifdef __cplusplus
 
-#include <boost/optional.hpp>
-#include <boost/utility/in_place_factory.hpp>
-#include <memory>
-
 
 namespace std
 {
@@ -30,6 +26,14 @@ namespace std
         typedef _Arg2 second_argument_type;
         typedef _Result result_type;
     };
+}
+
+#include <boost/optional.hpp>
+#include <boost/utility/in_place_factory.hpp>
+#include <memory>
+
+namespace std
+{
 
     template <typename T>
     using optional = boost::optional <T>;
@@ -43,6 +47,8 @@ namespace std
     }
 
 }
+
+
 
 using boost::in_place;
 
@@ -97,5 +103,7 @@ constexpr double M_PI_2 = M_PI / 2.0;
 #define NOT_MACRO !
 
 #define TEMPORARILY_DISABLED 1
+
+#define UNICODE_CHAR(c) L##c
 
 #endif

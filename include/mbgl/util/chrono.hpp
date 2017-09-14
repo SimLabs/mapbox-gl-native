@@ -44,6 +44,8 @@ template <class Rep, class Period
     >
 constexpr std::chrono::duration<Rep, Period> abs(std::chrono::duration<Rep, Period> d)
 {
+    static_assert(std::chrono::duration<Rep, Period>::min() < std::chrono::duration<Rep, Period>::zero(), "AAA");
+    
     return d >= d.zero() ? d : -d;
 }
 
