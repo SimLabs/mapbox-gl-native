@@ -1,4 +1,4 @@
-#include "i18n.hpp"
+﻿#include "i18n.hpp"
 
 #include <algorithm>
 #include <map>
@@ -302,23 +302,23 @@ DEFINE_IS_IN_UNICODE_BLOCK(HalfwidthandFullwidthForms, 0xFF00, 0xFFEF)
 
 const std::map<char16_t, char16_t> verticalPunctuation = {
 
-    { u'!', u'︕' },  { u'#', u'＃' },  { u'$', u'＄' },  { u'%', u'％' },  { u'&', u'＆' },
-    { u'(', u'︵' },  { u')', u'︶' },  { u'*', u'＊' },  { u'+', u'＋' },  { u',', u'︐' },
-    { u'-', u'︲' },  { u'.', u'・' },  { u'/', u'／' },  { u':', u'︓' },  { u';', u'︔' },
-    { u'<', u'︿' },  { u'=', u'＝' },  { u'>', u'﹀' },  { u'?', u'︖' },  { u'@', u'＠' },
-    { u'[', u'﹇' },  { u'\\', u'＼' }, { u']', u'﹈' },  { u'^', u'＾' },  { u'_', u'︳' },
-    { u'`', u'｀' },  { u'{', u'︷' },  { u'|', u'―' },   { u'}', u'︸' },  { u'~', u'～' },
-    { u'¢', u'￠' },  { u'£', u'￡' },  { u'¥', u'￥' },  { u'¦', u'￤' },  { u'¬', u'￢' },
-    { u'¯', u'￣' },  { u'–', u'︲' },  { u'—', u'︱' },  { u'‘', u'﹃' },  { u'’', u'﹄' },
-    { u'“', u'﹁' },  { u'”', u'﹂' },  { u'…', u'︙' },  { u'‧', u'・' },  { u'₩', u'￦' },
-    { u'、', u'︑' }, { u'。', u'︒' }, { u'〈', u'︿' }, { u'〉', u'﹀' }, { u'《', u'︽' },
-    { u'》', u'︾' }, { u'「', u'﹁' }, { u'」', u'﹂' }, { u'『', u'﹃' }, { u'』', u'﹄' },
-    { u'【', u'︻' }, { u'】', u'︼' }, { u'〔', u'︹' }, { u'〕', u'︺' }, { u'〖', u'︗' },
-    { u'〗', u'︘' }, { u'！', u'︕' }, { u'（', u'︵' }, { u'）', u'︶' }, { u'，', u'︐' },
-    { u'－', u'︲' }, { u'．', u'・' }, { u'：', u'︓' }, { u'；', u'︔' }, { u'＜', u'︿' },
-    { u'＞', u'﹀' }, { u'？', u'︖' }, { u'［', u'﹇' }, { u'］', u'﹈' }, { u'＿', u'︳' },
-    { u'｛', u'︷' }, { u'｜', u'―' },  { u'｝', u'︸' }, { u'｟', u'︵' }, { u'｠', u'︶' },
-    { u'｡', u'︒' },  { u'｢', u'﹁' },  { u'｣', u'﹂' },
+    { UNICODE_CHAR('!'), UNICODE_CHAR('︕') },  { UNICODE_CHAR('#'), UNICODE_CHAR('＃') },  { UNICODE_CHAR('$'), UNICODE_CHAR('＄') },  { UNICODE_CHAR('%'), UNICODE_CHAR('％') },  { UNICODE_CHAR('&'), UNICODE_CHAR('＆') },
+    { UNICODE_CHAR('('), UNICODE_CHAR('︵') },  { UNICODE_CHAR(')'), UNICODE_CHAR('︶') },  { UNICODE_CHAR('*'), UNICODE_CHAR('＊') },  { UNICODE_CHAR('+'), UNICODE_CHAR('＋') },  { UNICODE_CHAR(','), UNICODE_CHAR('︐') },
+    { UNICODE_CHAR('-'), UNICODE_CHAR('︲') },  { UNICODE_CHAR('.'), UNICODE_CHAR('・') },  { UNICODE_CHAR('/'), UNICODE_CHAR('／') },  { UNICODE_CHAR(':'), UNICODE_CHAR('︓') },  { UNICODE_CHAR(';'), UNICODE_CHAR('︔') },
+    { UNICODE_CHAR('<'), UNICODE_CHAR('︿') },  { UNICODE_CHAR('='), UNICODE_CHAR('＝') },  { UNICODE_CHAR('>'), UNICODE_CHAR('﹀') },  { UNICODE_CHAR('?'), UNICODE_CHAR('︖') },  { UNICODE_CHAR('@'), UNICODE_CHAR('＠') },
+    { UNICODE_CHAR('['), UNICODE_CHAR('﹇') },  { UNICODE_CHAR('\\'), UNICODE_CHAR('＼') }, { UNICODE_CHAR(']'), UNICODE_CHAR('﹈') },  { UNICODE_CHAR('^'), UNICODE_CHAR('＾') },  { UNICODE_CHAR('_'), UNICODE_CHAR('︳') },
+    { UNICODE_CHAR('`'), UNICODE_CHAR('｀') },  { UNICODE_CHAR('{'), UNICODE_CHAR('︷') },  { UNICODE_CHAR('|'), UNICODE_CHAR('―') },   { UNICODE_CHAR('}'), UNICODE_CHAR('︸') },  { UNICODE_CHAR('~'), UNICODE_CHAR('～') },
+    { UNICODE_CHAR('¢'), UNICODE_CHAR('￠') },  { UNICODE_CHAR('£'), UNICODE_CHAR('￡') },  { UNICODE_CHAR('¥'), UNICODE_CHAR('￥') },  { UNICODE_CHAR('¦'), UNICODE_CHAR('￤') },  { UNICODE_CHAR('¬'), UNICODE_CHAR('￢') },
+    { UNICODE_CHAR('¯'), UNICODE_CHAR('￣') },  { UNICODE_CHAR('–'), UNICODE_CHAR('︲') },  { UNICODE_CHAR('—'), UNICODE_CHAR('︱') },  { UNICODE_CHAR('‘'), UNICODE_CHAR('﹃') },  { UNICODE_CHAR('’'), UNICODE_CHAR('﹄') },
+    { UNICODE_CHAR('“'), UNICODE_CHAR('﹁') },  { UNICODE_CHAR('”'), UNICODE_CHAR('﹂') },  { UNICODE_CHAR('…'), UNICODE_CHAR('︙') },  { UNICODE_CHAR('‧'), UNICODE_CHAR('・') },  { UNICODE_CHAR('₩'), UNICODE_CHAR('￦') },
+    { UNICODE_CHAR('、'), UNICODE_CHAR('︑') }, { UNICODE_CHAR('。'), UNICODE_CHAR('︒') }, { UNICODE_CHAR('〈'), UNICODE_CHAR('︿') }, { UNICODE_CHAR('〉'), UNICODE_CHAR('﹀') }, { UNICODE_CHAR('《'), UNICODE_CHAR('︽') },
+    { UNICODE_CHAR('》'), UNICODE_CHAR('︾') }, { UNICODE_CHAR('「'), UNICODE_CHAR('﹁') }, { UNICODE_CHAR('」'), UNICODE_CHAR('﹂') }, { UNICODE_CHAR('『'), UNICODE_CHAR('﹃') }, { UNICODE_CHAR('』'), UNICODE_CHAR('﹄') },
+    { UNICODE_CHAR('【'), UNICODE_CHAR('︻') }, { UNICODE_CHAR('】'), UNICODE_CHAR('︼') }, { UNICODE_CHAR('〔'), UNICODE_CHAR('︹') }, { UNICODE_CHAR('〕'), UNICODE_CHAR('︺') }, { UNICODE_CHAR('〖'), UNICODE_CHAR('︗') },
+    { UNICODE_CHAR('〗'), UNICODE_CHAR('︘') }, { UNICODE_CHAR('！'), UNICODE_CHAR('︕') }, { UNICODE_CHAR('（'), UNICODE_CHAR('︵') }, { UNICODE_CHAR('）'), UNICODE_CHAR('︶') }, { UNICODE_CHAR('，'), UNICODE_CHAR('︐') },
+    { UNICODE_CHAR('－'), UNICODE_CHAR('︲') }, { UNICODE_CHAR('．'), UNICODE_CHAR('・') }, { UNICODE_CHAR('：'), UNICODE_CHAR('︓') }, { UNICODE_CHAR('；'), UNICODE_CHAR('︔') }, { UNICODE_CHAR('＜'), UNICODE_CHAR('︿') },
+    { UNICODE_CHAR('＞'), UNICODE_CHAR('﹀') }, { UNICODE_CHAR('？'), UNICODE_CHAR('︖') }, { UNICODE_CHAR('［'), UNICODE_CHAR('﹇') }, { UNICODE_CHAR('］'), UNICODE_CHAR('﹈') }, { UNICODE_CHAR('＿'), UNICODE_CHAR('︳') },
+    { UNICODE_CHAR('｛'), UNICODE_CHAR('︷') }, { UNICODE_CHAR('｜'), UNICODE_CHAR('―') },  { UNICODE_CHAR('｝'), UNICODE_CHAR('︸') }, { UNICODE_CHAR('｟'), UNICODE_CHAR('︵') }, { UNICODE_CHAR('｠'), UNICODE_CHAR('︶') },
+    { UNICODE_CHAR('｡'), UNICODE_CHAR('︒') },  { UNICODE_CHAR('｢'), UNICODE_CHAR('﹁') },  { UNICODE_CHAR('｣'), UNICODE_CHAR('﹂') },
 
 };
 } // namespace
@@ -411,7 +411,7 @@ bool allowsVerticalWritingMode(const std::u16string& string) {
 // “neutral” characters.
 
 bool hasUprightVerticalOrientation(char16_t chr) {
-    if (chr == u'˪' || chr == u'˫')
+    if (chr == UNICODE_CHAR('˪') || chr == UNICODE_CHAR('˫'))
         return true;
 
     // Return early for characters outside all ranges whose characters remain
@@ -422,14 +422,14 @@ bool hasUprightVerticalOrientation(char16_t chr) {
     if (isInBopomofo(chr) || isInBopomofoExtended(chr))
         return true;
     if (isInCJKCompatibilityForms(chr)) {
-        if (!(chr >= u'﹉' && chr <= u'﹏'))
+        if (!(chr >= UNICODE_CHAR('﹉') && chr <= UNICODE_CHAR('﹏')))
             return true;
     }
     if (isInCJKCompatibility(chr) || isInCJKCompatibilityIdeographs(chr) ||
         isInCJKRadicalsSupplement(chr) || isInCJKStrokes(chr))
         return true;
     if (isInCJKSymbolsandPunctuation(chr)) {
-        if (!(chr >= u'〈' && chr <= u'】') && !(chr >= u'〔' && chr <= u'〟') && chr != u'〰')
+        if (!(chr >= UNICODE_CHAR('〈') && chr <= UNICODE_CHAR('】')) && !(chr >= UNICODE_CHAR('〔') && chr <= UNICODE_CHAR('〟')) && chr != UNICODE_CHAR('〰'))
             return true;
     }
     if (isInCJKUnifiedIdeographs(chr) || isInCJKUnifiedIdeographsExtensionA(chr) ||
@@ -439,19 +439,19 @@ bool hasUprightVerticalOrientation(char16_t chr) {
         isInIdeographicDescriptionCharacters(chr) || isInKanbun(chr) || isInKangxiRadicals(chr))
         return true;
     if (isInKatakana(chr)) {
-        if (chr != u'ー')
+        if (chr != UNICODE_CHAR('ー'))
             return true;
     }
     if (isInKatakanaPhoneticExtensions(chr))
         return true;
     if (isInHalfwidthandFullwidthForms(chr)) {
-        if (chr != u'（' && chr != u'）' && chr != u'－' && !(chr >= u'：' && chr <= u'＞') &&
-            chr != u'［' && chr != u'］' && chr != u'＿' && !(chr >= u'｛' && chr <= 0xFFDF) &&
-            chr != u'￣' && !(chr >= u'￨' && chr <= 0xFFEF))
+        if (chr != UNICODE_CHAR('（') && chr != UNICODE_CHAR('）') && chr != UNICODE_CHAR('－') && !(chr >= UNICODE_CHAR('：') && chr <= UNICODE_CHAR('＞')) &&
+            chr != UNICODE_CHAR('［') && chr != UNICODE_CHAR('］') && chr != UNICODE_CHAR('＿') && !(chr >= UNICODE_CHAR('｛') && chr <= 0xFFDF) &&
+            chr != UNICODE_CHAR('￣') && !(chr >= UNICODE_CHAR('￨') && chr <= 0xFFEF))
             return true;
     }
     if (isInSmallFormVariants(chr)) {
-        if (!(chr >= u'﹘' && chr <= u'﹞') && !(chr >= u'﹣' && chr <= u'﹦'))
+        if (!(chr >= UNICODE_CHAR('﹘') && chr <= UNICODE_CHAR('﹞')) && !(chr >= UNICODE_CHAR('﹣') && chr <= UNICODE_CHAR('﹦')))
             return true;
     }
     if (isInUnifiedCanadianAboriginalSyllabics(chr) ||
@@ -500,15 +500,15 @@ bool hasUprightVerticalOrientation(char16_t chr) {
 
 bool hasNeutralVerticalOrientation(char16_t chr) {
     if (isInLatin1Supplement(chr)) {
-        if (chr == u'§' || chr == u'©' || chr == u'®' || chr == u'±' || chr == u'¼' ||
-            chr == u'½' || chr == u'¾' || chr == u'×' || chr == u'÷') {
+        if (chr == UNICODE_CHAR('§') || chr == UNICODE_CHAR('©') || chr == UNICODE_CHAR('®') || chr == UNICODE_CHAR('±') || chr == UNICODE_CHAR('¼') ||
+            chr == UNICODE_CHAR('½') || chr == UNICODE_CHAR('¾') || chr == UNICODE_CHAR('×') || chr == UNICODE_CHAR('÷')) {
             return true;
         }
     }
     if (isInGeneralPunctuation(chr)) {
-        if (chr == u'‖' || chr == u'†' || chr == u'‡' || chr == u'‰' || chr == u'‱' ||
-            chr == u'※' || chr == u'‼' || chr == u'⁂' || chr == u'⁇' || chr == u'⁈' ||
-            chr == u'⁉' || chr == u'⁑') {
+        if (chr == UNICODE_CHAR('‖') || chr == UNICODE_CHAR('†') || chr == UNICODE_CHAR('‡') || chr == UNICODE_CHAR('‰') || chr == UNICODE_CHAR('‱') ||
+            chr == UNICODE_CHAR('※') || chr == UNICODE_CHAR('‼') || chr == UNICODE_CHAR('⁂') || chr == UNICODE_CHAR('⁇') || chr == UNICODE_CHAR('⁈') ||
+            chr == UNICODE_CHAR('⁉') || chr == UNICODE_CHAR('⁑')) {
             return true;
         }
     }
@@ -516,10 +516,10 @@ bool hasNeutralVerticalOrientation(char16_t chr) {
         return true;
     }
     if (isInMiscellaneousTechnical(chr)) {
-        if ((chr >= u'⌀' && chr <= u'⌇') || (chr >= u'⌌' && chr <= u'⌟') ||
-            (chr >= u'⌤' && chr <= u'⌨') || chr == u'⌫' || (chr >= u'⍽' && chr <= u'⎚') ||
-            (chr >= u'⎾' && chr <= u'⏍') || chr == u'⏏' || (chr >= u'⏑' && chr <= u'⏛') ||
-            (chr >= u'⏢' && chr <= 0x23FF)) {
+        if ((chr >= UNICODE_CHAR('⌀') && chr <= UNICODE_CHAR('⌇')) || (chr >= UNICODE_CHAR('⌌') && chr <= UNICODE_CHAR('⌟')) ||
+            (chr >= UNICODE_CHAR('⌤') && chr <= UNICODE_CHAR('⌨')) || chr == UNICODE_CHAR('⌫') || (chr >= UNICODE_CHAR('⍽') && chr <= UNICODE_CHAR('⎚')) ||
+            (chr >= UNICODE_CHAR('⎾') && chr <= UNICODE_CHAR('⏍')) || chr == UNICODE_CHAR('⏏') || (chr >= UNICODE_CHAR('⏑') && chr <= UNICODE_CHAR('⏛')) ||
+            (chr >= UNICODE_CHAR('⏢') && chr <= 0x23FF)) {
             return true;
         }
     }
@@ -528,8 +528,8 @@ bool hasNeutralVerticalOrientation(char16_t chr) {
         return true;
     }
     if (isInMiscellaneousSymbols(chr)) {
-        if ((chr >= u'⬒' && chr <= u'⬯') ||
-            (chr >= u'⭐' && chr <= 0x2B59 /* heavy circled saltire */) ||
+        if ((chr >= UNICODE_CHAR('⬒') && chr <= UNICODE_CHAR('⬯')) ||
+            (chr >= UNICODE_CHAR('⭐') && chr <= 0x2B59 /* heavy circled saltire */) ||
             (chr >= 0x2BB8 /* upwards white arrow from bar with horizontal bar */ &&
              chr <= 0x2BEB)) {
             return true;
@@ -540,9 +540,9 @@ bool hasNeutralVerticalOrientation(char16_t chr) {
         isInHalfwidthandFullwidthForms(chr)) {
         return true;
     }
-    if (chr == u'∞' || chr == u'∴' || chr == u'∵' ||
-        (chr >= 0x2700 /* black safety scissors */ && chr <= u'❧') ||
-        (chr >= u'❶' && chr <= u'➓') || chr == 0xFFFC /* object replacement character */ ||
+    if (chr == UNICODE_CHAR('∞') || chr == UNICODE_CHAR('∴') || chr == UNICODE_CHAR('∵') ||
+        (chr >= 0x2700 /* black safety scissors */ && chr <= UNICODE_CHAR('❧')) ||
+        (chr >= UNICODE_CHAR('❶') && chr <= UNICODE_CHAR('➓')) || chr == 0xFFFC /* object replacement character */ ||
         chr == 0xFFFD /* replacement character */) {
         return true;
     }
