@@ -1,16 +1,45 @@
 #include <mbgl/renderer/render_static_data.hpp>
 #include <mbgl/programs/program_parameters.hpp>
 
-#if !TEMPORARILY_DISABLED
+
 
 namespace mbgl {
+namespace util
+{
+    namespace
+    {
+
+        struct extent_aux_t
+        {
+            extent_aux_t(int32_t val)
+                : val(val)
+            {
+
+            }
+
+            operator int16_t() const
+            {
+                return int16_t(val);
+            }
+
+            operator uint16_t() const
+            {
+                return uint16_t(val);
+            }
+
+            int32_t val;
+        };
+
+        extent_aux_t EXTENT_AUX = EXTENT;
+    }
+}
 
 static gl::VertexVector<FillLayoutVertex> tileVertices() {
     gl::VertexVector<FillLayoutVertex> result;
     result.emplace_back(FillProgram::layoutVertex({ 0,            0 }));
-    result.emplace_back(FillProgram::layoutVertex({ util::EXTENT, 0 }));
-    result.emplace_back(FillProgram::layoutVertex({ 0, util::EXTENT }));
-    result.emplace_back(FillProgram::layoutVertex({ util::EXTENT, util::EXTENT }));
+    result.emplace_back(FillProgram::layoutVertex({ util::EXTENT_AUX, 0 }));
+    result.emplace_back(FillProgram::layoutVertex({ 0, util::EXTENT_AUX }));
+    result.emplace_back(FillProgram::layoutVertex({ util::EXTENT_AUX, util::EXTENT_AUX }));
     return result;
 }
 
@@ -34,9 +63,9 @@ static gl::IndexVector<gl::LineStrip> tileLineStripIndices() {
 static gl::VertexVector<RasterLayoutVertex> rasterVertices() {
     gl::VertexVector<RasterLayoutVertex> result;
     result.emplace_back(RasterProgram::layoutVertex({ 0, 0 }, { 0, 0 }));
-    result.emplace_back(RasterProgram::layoutVertex({ util::EXTENT, 0 }, { util::EXTENT, 0 }));
-    result.emplace_back(RasterProgram::layoutVertex({ 0, util::EXTENT }, { 0, util::EXTENT }));
-    result.emplace_back(RasterProgram::layoutVertex({ util::EXTENT, util::EXTENT }, { util::EXTENT, util::EXTENT }));
+    result.emplace_back(RasterProgram::layoutVertex({ util::EXTENT_AUX, 0 }, { util::EXTENT_AUX, 0 }));
+    result.emplace_back(RasterProgram::layoutVertex({ 0, util::EXTENT_AUX }, { 0, util::EXTENT_AUX }));
+    result.emplace_back(RasterProgram::layoutVertex({ util::EXTENT_AUX, util::EXTENT_AUX }, { util::EXTENT_AUX, util::EXTENT_AUX }));
     return result;
 }
 
@@ -68,4 +97,3 @@ RenderStaticData::RenderStaticData(gl::Context& context, float pixelRatio, const
 
 } // namespace mbgl
 
-#endif // !TEMPORARILY_DISABLED

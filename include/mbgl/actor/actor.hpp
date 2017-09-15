@@ -71,13 +71,22 @@ public:
 #else
 
     template <class... Args>
+    Actor(std::true_type, Scheduler& scheduler, Args&&... args_)
+        : mailbox(std::make_shared<Mailbox>(scheduler))
+        , object(self(), std::forward<Args>(args_)...)
+    {}
+
+    template <class... Args>
+    Actor(std::false_type, Scheduler& scheduler, Args&&... args_)
+        : mailbox(std::make_shared<Mailbox>(scheduler))
+        , object(std::forward<Args>(args_)...)
+    {}
+
+    template <class... Args>
     Actor(Scheduler& scheduler, Args&&... args_)
-            : mailbox(std::make_shared<Mailbox>(scheduler))
+        : Actor(std::is_constructible<Object, ActorRef<Object>, Args...>(), scheduler, std::forward<Args>(args_)...)
     {
-        if constexpr (std::is_constructible<Object, ActorRef<Object>, Args...>::value)
-            object = in_place(self(), std::forward<Args>(args_)...);
-        else
-            object = in_place(std::forward<Args>(args_)...);
+
     }
 
 
@@ -89,7 +98,7 @@ public:
 
     template <typename Fn, class... Args>
     void invoke(Fn fn, Args&&... args) {
-        mailbox->push(actor::makeMessage(*object, fn, std::forward<Args>(args)...));
+        mailbox->push(actor::makeMessage(object, fn, std::forward<Args>(args)...));
     }
 
     template <typename Fn, class... Args>
@@ -99,12 +108,12 @@ public:
 
         std::promise<ResultType> promise;
         auto future = promise.get_future();
-        mailbox->push(actor::makeMessage(std::move(promise), *object, fn, std::forward<Args>(args)...));
+        mailbox->push(actor::makeMessage(std::move(promise), object, fn, std::forward<Args>(args)...));
         return future;
     }
 
     ActorRef<std::decay_t<Object>> self() {
-        return ActorRef<std::decay_t<Object>>(*object, mailbox);
+        return ActorRef<std::decay_t<Object>>(object, mailbox);
     }
 
     operator ActorRef<std::decay_t<Object>>() {
@@ -113,7 +122,7 @@ public:
 
 private:
     std::shared_ptr<Mailbox> mailbox;
-    optional<Object> object;
+    Object object;
 };
 
 } // namespace mbgl

@@ -3,17 +3,15 @@
 
 namespace mbgl {
 
-#if !TEMPORARILY_DISABLED
-
-MBGL_DEFINE_ENUM(EventSeverity, {
+MBGL_ENUM_BEGIN(EventSeverity) {
     { EventSeverity::Debug, "DEBUG" },
     { EventSeverity::Info, "INFO" },
     { EventSeverity::Warning, "WARNING" },
     { EventSeverity::Error, "ERROR" },
     { EventSeverity(-1), "UNKNOWN" },
-});
+} MBGL_ENUM_END(EventSeverity);
 
-MBGL_DEFINE_ENUM(Event, {
+MBGL_ENUM_BEGIN(Event) {
     { Event::General, "General" },
     { Event::Setup, "Setup" },
     { Event::Shader, "Shader" },
@@ -31,8 +29,7 @@ MBGL_DEFINE_ENUM(Event, {
     { Event::Crash, "Crash" },
     { Event::Glyph, "Glyph" },
     { Event(-1), "Unknown" },
-});
+} MBGL_ENUM_END(Event);
 
-#endif
 
 } // namespace mbgl

@@ -1,5 +1,3 @@
-#if !TEMPORARILY_DISABLED
-
 #include <mbgl/util/async_task.hpp>
 
 #include <mbgl/util/run_loop.hpp>
@@ -67,4 +65,3 @@ void AsyncTask::send() {
 } // namespace util
 } // namespace mbgl
 
-#endif //!TEMPORARILY_DISABLED

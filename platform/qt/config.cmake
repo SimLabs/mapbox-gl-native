@@ -14,10 +14,12 @@ if (NOT CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
         mason_use(icu VERSION 58.1-min-size)
     endif()
 else()
-    add_compile_options(
-        -Wa,-mbig-obj
-        -mwindows
-    )
+    if (NOT MSVC)
+        add_compile_options(
+            -Wa,-mbig-obj
+            -mwindows
+        )
+    endif (NOT MSVC)
 endif()
 
 macro(mbgl_platform_core)
@@ -30,7 +32,7 @@ macro(mbgl_platform_core)
             PUBLIC -lz
             PUBLIC -lcurl
         )
-        target_add_mason_package(mbgl-core PUBLIC nunicode)
+#        target_add_mason_package(mbgl-core PUBLIC nunicode)
     endif()
 
 

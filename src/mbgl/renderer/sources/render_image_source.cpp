@@ -12,9 +12,38 @@
 #include <mbgl/util/logging.hpp>
 #include <mbgl/util/constants.hpp>
 
-#if !TEMPORARILY_DISABLED
 
 namespace mbgl {
+
+namespace util
+{
+    namespace
+    {
+
+        struct extent_aux_t
+        {
+            extent_aux_t(int32_t val)
+                : val(val)
+            {
+
+            }
+
+            operator int16_t() const
+            {
+                return int16_t(val);
+            }
+
+            operator uint16_t() const
+            {
+                return uint16_t(val);
+            }
+
+            int32_t val;
+        };
+
+        extent_aux_t EXTENT_AUX = EXTENT;
+    }
+}
 
 using namespace style;
 
@@ -196,11 +225,11 @@ void RenderImageSource::update(Immutable<style::Source::Impl> baseImpl_,
     bucket->vertices.emplace_back(
         RasterProgram::layoutVertex({ geomCoords[0].x, geomCoords[0].y }, { 0, 0 }));
     bucket->vertices.emplace_back(
-        RasterProgram::layoutVertex({ geomCoords[1].x, geomCoords[1].y }, { util::EXTENT, 0 }));
+        RasterProgram::layoutVertex({ geomCoords[1].x, geomCoords[1].y }, { util::EXTENT_AUX, 0 }));
     bucket->vertices.emplace_back(
-        RasterProgram::layoutVertex({ geomCoords[3].x, geomCoords[3].y }, { 0, util::EXTENT }));
+        RasterProgram::layoutVertex({ geomCoords[3].x, geomCoords[3].y }, { 0, util::EXTENT_AUX }));
     bucket->vertices.emplace_back(
-        RasterProgram::layoutVertex({ geomCoords[2].x, geomCoords[2].y }, { util::EXTENT, util::EXTENT }));
+        RasterProgram::layoutVertex({ geomCoords[2].x, geomCoords[2].y }, { util::EXTENT_AUX, util::EXTENT_AUX }));
 
     bucket->indices.emplace_back(0, 1, 2);
     bucket->indices.emplace_back(1, 2, 3);
@@ -215,4 +244,3 @@ void RenderImageSource::dumpDebugLogs() const {
 
 } // namespace mbgl
 
-#endif // !TEMPORARILY_DISABLED

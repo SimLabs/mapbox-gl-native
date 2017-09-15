@@ -1,3 +1,13 @@
+set(MBGL_PLATFORM "qt")
+
+
+set(Qt5_DIR "c:/Qt/new/5.9.1/msvc2017_64/lib/cmake/Qt5")
+set(Qt5Core_DIR "c:/Qt/new/5.9.1/msvc2017_64/lib/cmake/Qt5Core")
+set(Qt5Gui_DIR "c:/Qt/new/5.9.1/msvc2017_64/lib/cmake/Qt5Gui")
+set(Qt5Location_DIR "c:/Qt/new/5.9.1/msvc2017_64/lib/cmake/Qt5Location")
+set(Qt5OpenGL_DIR "c:/Qt/new/5.9.1/msvc2017_64/lib/cmake/Qt5OpenGL")
+set(Qt5Sql_DIR "c:/Qt/new/5.9.1/msvc2017_64/lib/cmake/Qt5Sql")
+
 cmake_minimum_required(VERSION 3.4)
 project(mbgl LANGUAGES CXX C)
 set(CMAKE_CXX_STANDARD 14)

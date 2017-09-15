@@ -107,3 +107,5 @@ constexpr double M_PI_2 = M_PI / 2.0;
 #define UNICODE_CHAR(c) L##c
 
 #endif
+
+

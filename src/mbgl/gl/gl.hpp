@@ -26,11 +26,14 @@
     #define GL_GLEXT_PROTOTYPES
     #include <QtGui/qopengl.h>
 #else
-    #define GL_GLEXT_PROTOTYPES
-    #define GLEW_STATIC
-    #include <GL/glew.h>
+
+#define GL_GLEXT_PROTOTYPES
+    //#include <GL/glew.h>
+    //#include <gl/wglew.h>
     // #include <GL/gl.h>
     //#include <GL/glext.h>
+
+#include "my_gl_hacks.h"
 #endif
 
 namespace mbgl {

@@ -12,6 +12,7 @@
 #include <cstdio>
 #include <chrono>
 #include <limits>
+#include <ctime>
 
 #include <mbgl/util/chrono.hpp>
 #include <mbgl/util/logging.hpp>

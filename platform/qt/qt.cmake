@@ -12,6 +12,10 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+if (MSVC)
+    include(platform/qt/qt_msvc.cmake)
+endif ()
+
 set(MBGL_QT_FILES
     # File source
     PRIVATE platform/default/asset_file_source.cpp
@@ -73,10 +77,12 @@ add_library(qmapboxgl SHARED
 )
 
 if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
-    target_compile_options(qmapboxgl
-        PRIVATE -Wa,-mbig-obj
-        PRIVATE -mwindows
-    )
+    if (NOT MSVC)
+        target_compile_options(qmapboxgl
+            PRIVATE -Wa,-mbig-obj
+            PRIVATE -mwindows
+        )
+    endif (NOT MSVC)
 endif()
 
 # C++ app
@@ -123,9 +129,12 @@ elseif (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
         PRIVATE -lopengl32
         PRIVATE -lglew32
     )
-    add_compile_options(
-        -Wa,-mbig-obj
-    )
+
+    if (NOT_MSVC)
+        add_compile_options(
+            -Wa,-mbig-obj
+        )
+    endif (NOT_MSVC)
 endif()
 
 if (NOT ${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})

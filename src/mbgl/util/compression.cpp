@@ -1,5 +1,3 @@
-#if !TEMPORARILY_DISABLED
-
 #include <mbgl/util/compression.hpp>
 
 #include <zlib.h>
@@ -9,7 +7,13 @@
 #include <stdexcept>
 
 // Check zlib library version.
-const static bool zlibVersionCheck __attribute__((unused)) = []() {
+const static bool zlibVersionCheck 
+
+#if !TEMPORARILY_DISABLED
+__attribute__((unused)) 
+#endif // !TEMPORARILY_DISABLED
+
+= []() {
     const char *const version = zlibVersion();
     if (version[0] != ZLIB_VERSION[0]) {
         char message[96];
@@ -100,5 +104,3 @@ std::string decompress(const std::string &raw) {
 }
 } // namespace util
 } // namespace mbgl
-
-#endif // !TEMPORARILY_DISABLED
