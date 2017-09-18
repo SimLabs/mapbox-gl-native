@@ -1447,7 +1447,6 @@ void QMapboxGL::render()
 #endif
 
     d_ptr->dirty = false;
-    my_glew_init();
     d_ptr->render();
 }
 

@@ -416,7 +416,6 @@ void MapWindow::initializeGL()
     connect(m_zoomAnimation, SIGNAL(finished()), this, SLOT(animationFinished()));
     connect(m_zoomAnimation, SIGNAL(valueChanged(const QVariant&)), this, SLOT(animationValueChanged()));
 
-    glewInit();
 }   
 
 void MapWindow::paintGL()

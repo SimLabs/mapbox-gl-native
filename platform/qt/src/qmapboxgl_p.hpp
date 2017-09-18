@@ -12,7 +12,6 @@
 #include <QObject>
 #include <QSize>
 
-void my_glew_init();
 
 
 class QMapboxGLPrivate : public QObject, public mbgl::RendererBackend, public mbgl::MapObserver
@@ -28,7 +27,7 @@ public:
     // mbgl::RendererBackend implementation.
     void bind() final;
     void updateAssumedState() final;
-    void activate() final { my_glew_init(); }
+    void activate() final {}
     void deactivate() final {}
 
     // mbgl::MapObserver implementation.
