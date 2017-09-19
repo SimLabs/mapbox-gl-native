@@ -47,12 +47,14 @@ public:
             platform::setCurrentThreadName(name);
             platform::makeThreadLowPriority();
 
-            loop = std::make_shared<RunLoop>(util::RunLoop::Type::New);
+            util::RunLoop loop_(util::RunLoop::Type::New);
+            loop = &loop_;
 
             object = std::make_unique<Actor<Object>>(*this, std::forward<Args>(args)...);
             running.set_value();
 
             loop->run();
+            loop = nullptr;
         });
 
         running.get_future().get();
@@ -154,7 +156,7 @@ private:
     std::unique_ptr<std::promise<void>> paused;
     std::unique_ptr<std::promise<void>> resumed;
 
-    std::shared_ptr<util::RunLoop> loop;
+    util::RunLoop* loop = nullptr;
 };
 
 } // namespace util

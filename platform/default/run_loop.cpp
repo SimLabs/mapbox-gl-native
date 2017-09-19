@@ -1,10 +1,6 @@
-#if !TEMPORARILY_DISABLED
-
 #include <mbgl/util/run_loop.hpp>
 #include <mbgl/util/async_task.hpp>
 #include <mbgl/util/thread_local.hpp>
-#include <mbgl/util/logging.hpp>
-#include <mbgl/util/event.hpp>
 
 #include <uv.h>
 
@@ -57,8 +53,7 @@ struct Watch {
 };
 
 RunLoop* RunLoop::Get() {
-    RunLoop *loop = current.get();
-    return loop;
+    return current.get();
 }
 
 class RunLoop::Impl {
@@ -224,5 +219,3 @@ void RunLoop::removeWatch(int fd) {
 
 } // namespace util
 } // namespace mbgl
-
-#endif //!TEMPORARILY_DISABLED

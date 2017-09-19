@@ -33,3 +33,11 @@ target_link_libraries(mbgl-qt
     PRIVATE Qt5::OpenGL
     PRIVATE Qt5::Widgets
 )
+
+target_link_libraries(mbgl-wrapper-test
+    PRIVATE qmapboxgl
+    PRIVATE Qt5::Core
+    PRIVATE Qt5::Gui
+    PRIVATE Qt5::Widgets
+    PRIVATE Qt5::OpenGL
+)

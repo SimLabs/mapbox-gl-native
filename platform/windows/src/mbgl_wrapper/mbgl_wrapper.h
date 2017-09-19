@@ -49,6 +49,8 @@ namespace mbgl_wrapper
         log_pfn log_f = nullptr;
 
         buffer_format_t desired_buffer_format = bf_rgba;
+
+        void *offscreen_surface_ptr = nullptr;
     };
 #pragma pack(pop)
 

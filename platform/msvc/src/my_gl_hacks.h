@@ -121,7 +121,13 @@
 
 #include <QOpenGLFunctions_4_3_Compatibility>
 
-QOpenGLFunctions_4_3_Compatibility *get_qt_opengl_functions();
+namespace mbgl
+{
+
+    typedef QOpenGLFunctions_4_3_Compatibility GlFunctions;
+
+    GlFunctions *getGlFunctions();
+}
 
 
-#define MY_GL_FUNCTION(name) get_qt_opengl_functions()->##name
+#define MY_GL_FUNCTION(name) getGlFunctions()->##name

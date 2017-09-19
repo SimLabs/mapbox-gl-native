@@ -16,11 +16,18 @@
 
 #include "mbgl_wrapper_functions.h"
 #include "logging_to_func.h"
+#include "mbgl/util/shared_thread_pool.hpp"
+
+
+namespace mbgl
+{
+    void SetOffscreenSurface(void *surface);
+
+}
 
 namespace mbgl_wrapper
 {
-
-std::shared_ptr<mbgl::ThreadPool> threadPool = std::make_shared<mbgl::ThreadPool>(4);
+std::shared_ptr<mbgl::ThreadPool> threadPool;
 std::shared_ptr<mbgl::util::RunLoop> loop;
 std::shared_ptr<mbgl::DefaultFileSource> fileSource;
 std::shared_ptr<mbgl::HeadlessFrontend> frontend;
@@ -33,9 +40,14 @@ size_t buffer_capacity = 0;
 
 void init(params_t const *params_)
 {
+    threadPool = mbgl::sharedThreadPool();
+
     params = *params_;
     mbgl::setLogFunc(params.log_f);
     mbgl::Log::Info(mbgl::Event::Setup, "Init");
+
+    mbgl::SetOffscreenSurface(params.offscreen_surface_ptr);
+
     double pixelRatio = 1;
 
     fileSource = std::make_shared<mbgl::DefaultFileSource>("C:\\temp\\mbgl-cache.db", ".");
@@ -45,7 +57,7 @@ void init(params_t const *params_)
     fileSource->setAPIBaseURL(server_url);  //"http://192.168.1.61:8080/"
     mbgl::Log::Info(mbgl::Event::Setup, "Server path: %s", server_url.c_str());
 
-    loop = std::make_shared<mbgl::util::RunLoop>();
+    loop = std::make_shared<mbgl::util::RunLoop>(mbgl::util::RunLoop::Type::New);
 
     frontend = std::make_shared<mbgl::HeadlessFrontend>(mbgl::Size(params.tile_width, params.tile_height), pixelRatio, *fileSource, *threadPool);
     
@@ -89,12 +101,10 @@ void update(uint32_t zoom, uint32_t x0, uint32_t y0, uint32_t width, uint32_t he
         uint32_t mbgl_y0 = (1 << zoom) - 1 - y0;
         // setting size
         mbgl::Size size = { width * params.tile_width, height * params.tile_height };
-        mbgl::Log::Info(mbgl::Event::Render, "Adjusting map to size %dx%d", size.width, size.height);
         map->setSize(size);
         frontend->setSize(size);
 
         // getting bounds
-        mbgl::Log::Info(mbgl::Event::Render, "Getting bounds");
         mbgl::CanonicalTileID first(zoom, x0, mbgl_y0);
         mbgl::CanonicalTileID last(zoom, x0 + width - 1, mbgl_y0 - height + 1); // minus, because converted coordinate is inverted
         mbgl::LatLngBounds map_bounds(first);
@@ -105,10 +115,8 @@ void update(uint32_t zoom, uint32_t x0, uint32_t y0, uint32_t width, uint32_t he
         map->jumpTo(map->cameraForLatLngBounds(map_bounds, mbgl::EdgeInsets()));
 
         // rendering
-        mbgl::Log::Info(mbgl::Event::Render, "Rendering");
         mbgl::PremultipliedImage image = frontend->render(*map);
 
-        mbgl::Log::Info(mbgl::Event::Render, "Got image of size %dx%d", image.size.width, image.size.height);
 
         buffer.buffer_format = params.desired_buffer_format;
 
@@ -162,10 +170,8 @@ void update(uint32_t zoom, uint32_t x0, uint32_t y0, uint32_t width, uint32_t he
 
     if (params.buffer_ready_f) 
     {
-        mbgl::Log::Info(mbgl::Event::Render, "Finished rendering callback invocation");
         params.buffer_ready_f(params.client_handle, &buffer);
     }
-    mbgl::Log::Info(mbgl::Event::Render, "Update completed");
 }
 
 } // namespace mbgl_wrapper

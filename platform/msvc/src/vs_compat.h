@@ -9,24 +9,8 @@
 
 #ifdef __cplusplus
 
-
-namespace std
-{
-    template <class _Arg, class _Result>
-    struct unary_function
-    {
-        typedef _Arg argument_type;
-        typedef _Result result_type;
-    };
-
-    template <class _Arg1, class _Arg2, class _Result>
-    struct binary_function
-    {
-        typedef _Arg1 first_argument_type;
-        typedef _Arg2 second_argument_type;
-        typedef _Result result_type;
-    };
-}
+#include <stl_config.h>
+#include <boost_config.h>
 
 #include <boost/optional.hpp>
 #include <boost/utility/in_place_factory.hpp>

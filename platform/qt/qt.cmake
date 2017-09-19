@@ -93,9 +93,12 @@ add_executable(mbgl-qt
     platform/qt/resources/common.qrc
 )
 
+if (NOT MSVC)
 target_link_libraries(mbgl-qt
     PRIVATE -lglew32
 )
+
+endif()
 
 xcode_create_scheme(TARGET mbgl-qt)
 
@@ -148,3 +151,5 @@ if (NOT ${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
 endif()
 
 xcode_create_scheme(TARGET qmapboxgl)
+
+

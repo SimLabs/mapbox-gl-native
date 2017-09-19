@@ -1,7 +1,7 @@
 #include <mbgl/util/logging.hpp>
 #include <mbgl/util/enum.hpp>
 
-#include <mbgl_wrapper/logging_to_func.h>
+#include "logging_to_func.h"
 
 #include <fstream>
 

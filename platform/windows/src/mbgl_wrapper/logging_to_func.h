@@ -1,6 +1,6 @@
 #pragma once
 
-#include <mbgl_wrapper/mbgl_wrapper.h>
+#include "mbgl_wrapper.h"
 
 #include <fstream>
 

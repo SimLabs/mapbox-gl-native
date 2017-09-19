@@ -12,19 +12,17 @@
 #include <mbgl/util/thread.hpp>
 #include <mbgl/util/work_request.hpp>
 
-#include <mbgl/util/logging.hpp>
-#include <mbgl/util/event.hpp>
-#include <mbgl/util/enum.hpp>
-
-
 #include <cassert>
+#include <boost/algorithm/string/predicate.hpp>
 
 namespace {
 
 const std::string assetProtocol = "asset://";
 
 bool isAssetURL(const std::string& url) {
-    return std::equal(assetProtocol.begin(), assetProtocol.end(), url.begin());
+
+    return boost::starts_with(url, assetProtocol);
+    //return std::equal(assetProtocol.begin(), assetProtocol.end(), url.begin());
 }
 
 } // namespace
@@ -114,27 +112,6 @@ public:
     }
 
     void request(AsyncRequest* req, Resource resource, ActorRef<FileSourceRequest> ref) {
-        std::string kinds[] = {
-            "Unknown",
-            "Style",
-            "Source",
-            "Tile",
-            "Glyphs",
-            "SpriteImage",
-            "SpriteJSON",
-            "Image"
-        };
-
-        std::string necessities[] = {
-            "Optional",
-            "Required"
-        };
-
-        Log::Info(Event::General, 
-                  "Resource of kind \"%s\" and necessity \"%s\" requested at url \"%s\"\n", 
-                  kinds[resource.kind].data(),
-                  necessities[resource.necessity].data(),
-                  resource.url.data());
         auto callback = [ref] (const Response& res) mutable {
             ref.invoke(&FileSourceRequest::setResponse, res);
         };

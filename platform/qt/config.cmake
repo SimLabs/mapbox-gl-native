@@ -23,21 +23,29 @@ else()
 endif()
 
 macro(mbgl_platform_core)
-    if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+    if (NOT MSVC)
+        if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+            target_link_libraries(mbgl-core
+                PUBLIC -lgdi32
+                PUBLIC -lkernel32
+                PUBLIC -lopengl32
+                PUBLIC -lglew32
+                PUBLIC -lz
+                PUBLIC -lcurl
+            )
+    #        target_add_mason_package(mbgl-core PUBLIC nunicode)
+        endif()
+    else()
         target_link_libraries(mbgl-core
-            PUBLIC -lgdi32
-            PUBLIC -lkernel32
-            PUBLIC -lopengl32
-            PUBLIC -lglew32
-            PUBLIC -lz
-            PUBLIC -lcurl
+            PUBLIC zlib.lib
         )
-#        target_add_mason_package(mbgl-core PUBLIC nunicode)
-    endif()
+
+    endif(NOT MSVC)
 
 
     target_sources(mbgl-core
         ${MBGL_QT_FILES}
+        platform/msvc/src/stdafx.cpp
     )
 
     target_include_directories(mbgl-core
@@ -56,17 +64,19 @@ macro(mbgl_platform_core)
             PRIVATE platform/default/webp_reader.cpp
         )
 
-        if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
-            target_link_libraries(mbgl-core
-                PUBLIC -lpng
-                PUBLIC -lwebp
-                PUBLIC -ljpeg
-            )
-        else()
-            target_add_mason_package(mbgl-core PRIVATE libjpeg-turbo)
-            target_add_mason_package(mbgl-core PRIVATE libpng)
-            target_add_mason_package(mbgl-core PRIVATE webp)
-        endif()
+        if (NOT MSVC)
+            if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+                target_link_libraries(mbgl-core
+                    PUBLIC -lpng
+                    PUBLIC -lwebp
+                    PUBLIC -ljpeg
+                )
+            else()
+                target_add_mason_package(mbgl-core PRIVATE libjpeg-turbo)
+                target_add_mason_package(mbgl-core PRIVATE libpng)
+                target_add_mason_package(mbgl-core PRIVATE webp)
+            endif()
+        endif(NOT MSVC)
 
     else()
         add_definitions(-DQT_IMAGE_DECODERS)
@@ -74,24 +84,27 @@ macro(mbgl_platform_core)
 
     if(NOT WITH_QT_I18N)
         target_sources(mbgl-core PRIVATE platform/default/bidi.cpp)
-        if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
-            target_link_libraries(mbgl-core
-                PUBLIC -lsicudt
-                PUBLIC -lsicudtd
-                PUBLIC -lsicuin
-                PUBLIC -lsicuind
-                PUBLIC -lsicuio
-                PUBLIC -lsicuiod
-                PUBLIC -lsicutest
-                PUBLIC -lsicutestd
-                PUBLIC -lsicutu
-                PUBLIC -lsicutud
-                PUBLIC -lsicuuc
-                PUBLIC -lsicuucd
-            )
-        else()
-            target_add_mason_package(mbgl-core PRIVATE icu)
-        endif()
+
+        if (NOT MSVC)
+            if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+                target_link_libraries(mbgl-core
+                    PUBLIC -lsicudt
+                    PUBLIC -lsicudtd
+                    PUBLIC -lsicuin
+                    PUBLIC -lsicuind
+                    PUBLIC -lsicuio
+                    PUBLIC -lsicuiod
+                    PUBLIC -lsicutest
+                    PUBLIC -lsicutestd
+                    PUBLIC -lsicutu
+                    PUBLIC -lsicutud
+                    PUBLIC -lsicuuc
+                    PUBLIC -lsicuucd
+                )
+            else()
+                target_add_mason_package(mbgl-core PRIVATE icu)
+            endif()
+        endif(NOT MSVC)
     else()
         target_sources(mbgl-core PRIVATE platform/qt/src/bidi.cpp)
     endif()
@@ -135,3 +148,4 @@ endif()
 
 target_add_mason_package(qmapboxgl PRIVATE geojson)
 target_add_mason_package(qmapboxgl PRIVATE rapidjson)
+

@@ -5,11 +5,16 @@
 #include <memory>
 #include <mbgl/util/image.hpp>
 #include "mbgl_wrapper/mbgl_wrapper_functions.h"
+#include <thread>
+
+#include <QApplication>
 
 #pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 
 const int TILE_WIDTH = 512, TILE_HEIGHT = 512;
-const std::string save_path = "C:\\Users\\user\\Desktop\\kek.png";
+const std::string save_path = "C:\\temp\\map.png";
+
+
 
 void save_buffer(void *, mbgl_wrapper::buffer_t const *buffer) {
     try {
@@ -18,7 +23,7 @@ void save_buffer(void *, mbgl_wrapper::buffer_t const *buffer) {
         std::size_t width = buffer->width * TILE_WIDTH;
         std::size_t height = buffer->height * TILE_HEIGHT;
         std::cerr << "trying to save " << width << "x" << height << " image of size " << buffer->buffer_size << "\n";;
-        out << mbgl::encodePNG(mbgl::PremultipliedImage({width, height}, buffer->ptr, buffer->buffer_size));
+        out << mbgl::encodePNG(mbgl::PremultipliedImage(mbgl::Size(width, height), buffer->ptr, buffer->buffer_size));
         std::cerr << "wrote\n";
         out.close();
     } catch(std::exception& e) {
@@ -53,8 +58,11 @@ void write_to_log(mbgl_wrapper::log_severity_t severity, char const *message) {
     log_stream << "[" << severity_str << "] " << std::string(message) << std::endl;
 }
 
-int main(int argc, char **argv) {
-	std::cerr << "ENTRY\n";
+int main(int argc, char **argv) 
+{
+    QApplication app(argc, argv);
+
+    std::cerr << "ENTRY\n";
 	
 	std::shared_ptr<mbgl_wrapper::params_t> params(
         new mbgl_wrapper::params_t {
@@ -63,8 +71,8 @@ int main(int argc, char **argv) {
             TILE_HEIGHT, 
             &save_buffer, 
             2,
-            "http://192.168.1.61:8080/", 
-            "http://192.168.1.61:8080/styles/klokantech-basic/style.json",
+            "http://localhost:8080/", 
+            "http://localhost:8080/styles/klokantech-basic/style.json",
             &write_to_log
         }
     );

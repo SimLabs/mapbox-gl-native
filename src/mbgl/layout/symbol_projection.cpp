@@ -258,14 +258,19 @@ namespace mbgl {
                     return PlacementResult::NeedsFlipping;
                 }
             }
-            assert(symbol.glyphOffsets.size() == 1); // We are relying on SymbolInstance.hasText filtering out symbols without any glyphs at all
-            const float glyphOffsetX = symbol.glyphOffsets.front();
-            optional<PlacedGlyph> singleGlyph = placeGlyphAlongLine(fontScale * glyphOffsetX, lineOffsetX, lineOffsetY, flip, anchorPoint, symbol.segment,
-                symbol.line, labelPlaneMatrix);
-            if (!singleGlyph)
-                return PlacementResult::NotEnoughRoom;
+            
+            // todo
+            if (!symbol.glyphOffsets.empty())
+            {
+                assert(symbol.glyphOffsets.size() == 1); // We are relying on SymbolInstance.hasText filtering out symbols without any glyphs at all
+                const float glyphOffsetX = symbol.glyphOffsets.front();
+                optional<PlacedGlyph> singleGlyph = placeGlyphAlongLine(fontScale * glyphOffsetX, lineOffsetX, lineOffsetY, flip, anchorPoint, symbol.segment,
+                    symbol.line, labelPlaneMatrix);
+                if (!singleGlyph)
+                    return PlacementResult::NotEnoughRoom;
 
-            placedGlyphs.push_back(*singleGlyph);
+                placedGlyphs.push_back(*singleGlyph);
+            }
         }
 
         for (auto& placedGlyph : placedGlyphs) {
