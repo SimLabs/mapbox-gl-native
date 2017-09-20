@@ -18,7 +18,6 @@ target_include_directories(mbgl-wrapper
 
 target_link_libraries(mbgl-wrapper
     PRIVATE mbgl-core
-    PRIVATE qmapboxgl
 )
 
 include(GenerateExportHeader)
@@ -30,7 +29,6 @@ add_executable(mbgl-wrapper-test
 
 target_link_libraries(mbgl-wrapper-test
     PRIVATE mbgl-core
-    PRIVATE qmapboxgl
     PRIVATE mbgl-wrapper
 )
 

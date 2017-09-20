@@ -40,6 +40,14 @@ set(MBGL_QT_FILES
     PRIVATE platform/default/mbgl/util/default_thread_pool.cpp
     PRIVATE platform/default/mbgl/util/default_thread_pool.hpp
 
+    # Render
+    PRIVATE platform/default/mbgl/gl/headless_backend.cpp
+    PRIVATE platform/default/mbgl/gl/headless_backend.hpp
+    PRIVATE platform/default/mbgl/gl/headless_display.cpp
+    PRIVATE platform/default/mbgl/gl/headless_display.hpp
+    PRIVATE platform/default/mbgl/gl/headless_frontend.cpp
+    PRIVATE platform/default/mbgl/gl/headless_frontend.hpp
+
     # Thread
     PRIVATE platform/qt/src/thread_local.cpp
 
@@ -58,6 +66,9 @@ set(MBGL_QT_FILES
     PRIVATE platform/qt/src/timer.cpp
     PRIVATE platform/qt/src/timer_impl.hpp
     PRIVATE platform/qt/src/utf.cpp
+
+    PRIVATE platform/qt/src/gl_functions.cpp
+    PRIVATE platform/qt/src/headless_backend_impl.cpp
 )
 
 include_directories(
