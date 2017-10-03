@@ -22,6 +22,7 @@
 #include "src/mbgl/tile/tile_id.hpp"
 
 #include "file_info.h"
+#include "mbgl/renderer/update_parameters.hpp"
 
 
 namespace mbgl_wrapper
@@ -29,6 +30,7 @@ namespace mbgl_wrapper
 
 struct wrapper_impl
     : wrapper
+    , mbgl::MapObserver
 {
     explicit wrapper_impl(params_ext_t const &params)
         : params_(params)
@@ -64,12 +66,12 @@ struct wrapper_impl
 
         map_ = std::make_shared<mbgl::Map>(
             *frontend_,
-            mbgl::MapObserver::nullObserver(),
+            *this,
             mbgl::Size(256, 256),
             pixel_ratio,
             *source_,
             *thread_pool_,
-            mbgl::MapMode::Still
+            mbgl::MapMode::Continuous
         );
 
         load_style(true);
@@ -84,7 +86,7 @@ struct wrapper_impl
         //loop_.reset();
     }
 
-    void load_style(bool force)
+    bool load_style(bool force)
     {
         auto new_style_timestamp = file_info::last_modified(params_.style_path);
 
@@ -96,7 +98,7 @@ struct wrapper_impl
         }
 
         if (!force && !expired)
-            return;
+            return false;
 
         std::string style_json;
         {
@@ -108,9 +110,11 @@ struct wrapper_impl
         }
 
         map_->getStyle().loadJSON(style_json);
+
+        return true;
     }
 
-    void render(request_t const& original_request, callback_pfn callback) override
+    void render(request_t const& original_request) override
     {
         auto request = original_request;
 
@@ -124,8 +128,9 @@ struct wrapper_impl
         uint32_t mbgl_y0 = (1 << request.zoom) - 1 - request.y0;
 
         mbgl::Size size(request.width * params_.tile_size, request.height * params_.tile_size);
-        map_->setSize(size);
 
+        backend_->set_size(size);
+        map_->setSize(size);
 
         // getting bounds
         mbgl::CanonicalTileID first(request.zoom, request.x0, mbgl_y0);
@@ -137,30 +142,81 @@ struct wrapper_impl
         // setting position
         map_->jumpTo(map_->cameraForLatLngBounds(map_bounds, mbgl::EdgeInsets()));
 
-        backend_->set_size(size);
+        auto const *state = frontend_->current_state();
+        assert(state);
 
-        bool rendered = false;
-        map_->renderStill([&](std::exception_ptr error) 
-        {
-            if (error)
-                mbgl::Log::Info(mbgl::Event::Render, "Rendering failed");
+        last_state_ = *state;
+        pending_work_ = true;      
+    }
 
-            rendered = true;
-        });
 
-        while (!rendered) 
-        {
-            auto *current_runloop = mbgl::util::RunLoop::Get();
-            //Assert(current_runloop == loop_.get());
-            (void)current_runloop;
+    void update() override
+    {
+        if (!pending_work_)
+            return;
+        
+        auto *current_runloop = mbgl::util::RunLoop::Get();
+        //Assert(current_runloop == loop_.get());
+        (void)current_runloop;
 
-            current_runloop->runOnce();
-        }
+        current_runloop->runOnce();
+    }
+
+private:
+    void onDidFailLoadingMap(std::exception_ptr rm) override
+    {
+        reply_t reply;
+        reply.error = true;
+        reply.needs_more_work = false;
+
+        invoke_callback(reply);
+    }
+
+    void onDidFinishRenderingMap(RenderMode rm) override
+    {
+//        if (rm == RenderMode::Partial)
+//            return;
 
         reply_t reply;
         reply.texture_id = backend_->get_texture();
+        reply.needs_more_work = rm != RenderMode::Full;
+
+        invoke_callback(reply);
+    }
+
+    void onDidFinishRenderingFrame(RenderMode rm) override
+    {
+//        if (rm == RenderMode::Partial)
+//            return;
         
-        callback(params_.context, reply);
+        reply_t reply;
+        reply.texture_id = backend_->get_texture();
+        reply.needs_more_work = rm != RenderMode::Full;
+
+        invoke_callback(reply);
+    }
+
+private:
+    void invoke_callback(reply_t const &reply)
+    {
+        if (last_state_)
+        {
+            auto const *state = frontend_->current_state();
+            assert(state);
+
+            auto last_latlon = last_state_->getLatLng();
+            auto curr_latlon = state->getLatLng();
+
+            if (last_latlon != curr_latlon)
+            {
+                int aaa = 5;
+            }
+        }
+        
+        
+        params_.callback(params_.context, reply);
+
+        pending_work_ = reply.needs_more_work;
     }
 
 private:
@@ -202,6 +258,11 @@ private:
     std::shared_ptr<mbgl::Map> map_;
 
     std::optional<file_info::timestamp_t> style_timestamp_;
+    callback_pfn current_callback_ = nullptr;
+
+    std::optional<mbgl::TransformState> last_state_;
+
+    bool pending_work_ = true;
 };
 
 MBGL_WRAPPER_API wrapper *create_wrapper(wrapper::params_ext_t const &params)

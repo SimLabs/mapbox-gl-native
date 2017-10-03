@@ -1,6 +1,7 @@
 #include "frontend.h"
 #include "mbgl/renderer/renderer.hpp"
 #include "mbgl/util/async_task.hpp"
+#include "mbgl/renderer/update_parameters.hpp"
 
 namespace mbgl_wrapper
 {
@@ -37,6 +38,14 @@ public:
     {
         update_parameters_ = update_parameters;
         async_invalidate_.send();
+    }
+
+    mbgl::TransformState const* current_state() const override
+    {
+        if (!update_parameters_)
+            return nullptr;
+
+        return &update_parameters_->transformState;
     }
 
 private:

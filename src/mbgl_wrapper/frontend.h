@@ -9,6 +9,8 @@ namespace mbgl {
     class FileSource;
     class Scheduler;
 
+    class TransformState;
+
 } // namespace mbgl
 
 namespace mbgl_wrapper
@@ -26,6 +28,8 @@ struct frontend
         std::shared_ptr<mbgl::Scheduler> scheduler;
         float pixel_ratio = 1.f;
     };
+
+    virtual mbgl::TransformState const *current_state() const = 0;
 
 };
 

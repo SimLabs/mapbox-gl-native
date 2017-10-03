@@ -23,7 +23,9 @@ struct request_t
 
 struct reply_t
 {
+    bool error = false;
     uint32_t texture_id = 0;
+    bool needs_more_work = false;
 };
 
 
@@ -40,6 +42,8 @@ struct wrapper
         uint32_t max_tiles = 16;
 
         void *context = nullptr;
+
+        callback_pfn callback = nullptr;
     };
     
     struct params_ext_t
@@ -53,7 +57,8 @@ struct wrapper
 
     virtual ~wrapper() {}
 
-    virtual void render(request_t const& request, callback_pfn callback) = 0;
+    virtual void render(request_t const& request) = 0;
+    virtual void update() = 0;
 };
 
 #if defined(mbgl_wrapper_EXPORTS)
