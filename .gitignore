@@ -48,3 +48,9 @@ cmake-build-debug/*
 CMakeCache.txt
 
 /*.dir/*
+
+Debug/*
+RelWithDebugInfo/*
+
+*_autogen/*
+x64/*

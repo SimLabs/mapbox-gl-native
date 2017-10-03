@@ -55,6 +55,11 @@ void init(params_t const *params_)
     std::string server_url(params.server_url);
 
     fileSource->setAPIBaseURL(server_url);  //"http://192.168.1.61:8080/"
+
+
+    if (params_->access_token)
+        fileSource->setAccessToken(params_->access_token);
+
     mbgl::Log::Info(mbgl::Event::Setup, "Server path: %s", server_url.c_str());
 
     loop = std::make_shared<mbgl::util::RunLoop>(mbgl::util::RunLoop::Type::New);
@@ -113,6 +118,8 @@ void update(uint32_t zoom, uint32_t x0, uint32_t y0, uint32_t width, uint32_t he
 
         // setting position
         map->jumpTo(map->cameraForLatLngBounds(map_bounds, mbgl::EdgeInsets()));
+        //map->setPitch(pitch);
+        //map->setBearing(45.);
 
         // rendering
         mbgl::PremultipliedImage image = frontend->render(*map);

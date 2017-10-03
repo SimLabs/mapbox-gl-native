@@ -27,10 +27,11 @@
     #include <QtGui/qopengl.h>
 #else
 
-#define GL_GLEXT_PROTOTYPES
-    //#include <GL/glew.h>
-    //#include <gl/wglew.h>
-    // #include <GL/gl.h>
+//#define GLEW_STATIC
+
+//#define GL_GLEXT_PROTOTYPES
+//#include <GL/glew.h>
+//#include <gl/wglew.h>
     //#include <GL/glext.h>
 
 #include "my_gl_hacks.h"

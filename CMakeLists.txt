@@ -144,6 +144,7 @@ endif()
 include(cmake/loop-uv.cmake)
 
 include(platform/${MBGL_PLATFORM}/config.cmake)
+include(cmake/mbgl_wrapper.cmake)
 
 include(cmake/core-files.cmake)
 include(cmake/core.cmake)

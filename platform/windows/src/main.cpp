@@ -6,20 +6,25 @@
 #include <mbgl/util/image.hpp>
 #include "mbgl_wrapper/mbgl_wrapper_functions.h"
 #include <thread>
+#include <sstream>
 
 #include <QApplication>
+#include <QOffscreenSurface>
 
 #pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 
 const int TILE_WIDTH = 512, TILE_HEIGHT = 512;
-const std::string save_path = "C:\\temp\\map.png";
-
+std::atomic<double> g_pitch = 0;
 
 
 void save_buffer(void *, mbgl_wrapper::buffer_t const *buffer) {
     try {
+        std::stringstream ss;
+
+        ss << "C:\\temp\\map" << g_pitch << ".png";
+        
         std::cerr << "opened stream\n";
-        std::ofstream out(save_path, std::ios::binary);
+        std::ofstream out(ss.str(), std::ios::binary);
         std::size_t width = buffer->width * TILE_WIDTH;
         std::size_t height = buffer->height * TILE_HEIGHT;
         std::cerr << "trying to save " << width << "x" << height << " image of size " << buffer->buffer_size << "\n";;
@@ -61,6 +66,8 @@ void write_to_log(mbgl_wrapper::log_severity_t severity, char const *message) {
 int main(int argc, char **argv) 
 {
     QApplication app(argc, argv);
+    QOffscreenSurface surface;
+    surface.create();
 
     std::cerr << "ENTRY\n";
 	
@@ -73,11 +80,22 @@ int main(int argc, char **argv)
             2,
             "http://localhost:8080/", 
             "http://localhost:8080/styles/klokantech-basic/style.json",
-            &write_to_log
+            nullptr,
+            &write_to_log,
+            mbgl_wrapper::bf_rgba,
+            &surface
         }
     );
 
+    
     mbgl_wrapper::init(params.get());
-    mbgl_wrapper::update(0, 0, 0, 1, 1);
+
+    for (size_t i = 0; i <= 18; ++i)
+    {
+        double const pitch = i * 10.;
+        g_pitch = pitch;
+        mbgl_wrapper::update(0, 0, 0, 1, 2);
+    }
+
     mbgl_wrapper::shutdown();
 }
