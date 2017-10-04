@@ -162,6 +162,22 @@ struct wrapper_impl
         current_runloop->runOnce();
     }
 
+    uint32_t texture_id() override
+    {
+        return backend_->texture_id();
+    }
+
+
+//    external_lock* create_external_lock() override
+//    {
+//        return backend_->create_external_lock();
+//    }
+//
+//    void delete_external_lock(external_lock* lock) override
+//    {
+//        return backend_->delete_external_lock(lock);
+//    }
+
 private:
     void onDidFailLoadingMap(std::exception_ptr rm) override
     {
@@ -178,7 +194,6 @@ private:
 //            return;
 
         reply_t reply;
-        reply.texture_id = backend_->get_texture();
         reply.needs_more_work = rm != RenderMode::Full;
 
         invoke_callback(reply);
@@ -190,7 +205,6 @@ private:
 //            return;
         
         reply_t reply;
-        reply.texture_id = backend_->get_texture();
         reply.needs_more_work = rm != RenderMode::Full;
 
         invoke_callback(reply);
@@ -199,6 +213,8 @@ private:
 private:
     void invoke_callback(reply_t const &reply)
     {
+//        assert(!backend_->locked());
+        
         if (last_state_)
         {
             auto const *state = frontend_->current_state();

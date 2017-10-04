@@ -4,11 +4,14 @@
 #include <QSurface>
 #include <QOpenGLContext>
 #include <QOpenGLFunctions_4_3_Compatibility>
-#include "src/mbgl/gl/context.hpp"
-#include "src/mbgl/gl/types.hpp"
-#include "src/mbgl/gl/texture.hpp"
-#include "src/mbgl/gl/renderbuffer.hpp"
-#include "src/mbgl/gl/framebuffer.hpp"
+#include <mutex>
+
+
+#include "mbgl/gl/context.hpp"
+#include "mbgl/gl/types.hpp"
+#include "mbgl/gl/texture.hpp"
+#include "mbgl/gl/renderbuffer.hpp"
+#include "mbgl/gl/framebuffer.hpp"
 
 namespace mbgl_wrapper
 {
@@ -72,10 +75,16 @@ struct backend_impl
 
         auto context = QOpenGLContext::currentContext();
         assert(context == &context_impl_);
+
+//        assert(!lock_);
+//        lock_ = lock_t(mutex_);
     }
 
     void deactivate() override
     {
+//        assert(lock_);
+//        lock_.reset();
+
         context_impl_.doneCurrent();
     }
 
@@ -84,7 +93,31 @@ struct backend_impl
         size_ = size;
     }
 
-    uint32_t get_texture() const override
+    uint32_t texture_id() const override
+    {
+        return fb_->texture.texture;
+    }
+
+
+//    external_lock *create_external_lock() override
+//    {
+//        return new external_lock_impl(this);
+//    }
+//
+//
+//    void delete_external_lock(external_lock* lock) override
+//    {
+//        delete lock;
+//    }
+//
+//    bool locked() const override
+//    {
+//        return bool(lock_);
+//    }
+
+    
+private:
+    uint32_t get_texture() const
     {
         return fb_->texture.texture;
     }
@@ -105,11 +138,45 @@ private:
         mbgl::gl::Framebuffer framebuffer;
     };
 
+//private:
+//    typedef std::mutex mutex_t;
+//    typedef std::unique_lock<mutex_t> lock_t;
+//
+//    struct external_lock_impl
+//        : external_lock
+//    {
+//        explicit external_lock_impl(backend_impl *owner)
+//            : owner_(owner)
+//            , lock_(owner->mutex_)
+//        {}
+//
+//        ~external_lock_impl()
+//        {
+//            
+//        }
+//
+//        external_lock_impl(external_lock_impl const &) = delete;
+//        external_lock_impl &operator=(external_lock_impl const &) = delete;
+//
+//        uint32_t get_texture() const override
+//        {
+//            return owner_->get_texture();
+//        }
+//
+//    private:
+//        backend_impl *owner_;
+//        lock_t lock_;
+//    };
+
+    
 private:
     params_t params_;
     QOpenGLContext context_impl_;
     std::unique_ptr<fb_t> fb_;
     mbgl::Size size_;
+
+//    mutex_t mutex_;
+//    std::optional<lock_t> lock_;
 };
 
 backend_uptr create_backend(backend::params_t const &params)

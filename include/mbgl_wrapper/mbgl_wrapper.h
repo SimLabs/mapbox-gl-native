@@ -24,10 +24,14 @@ struct request_t
 struct reply_t
 {
     bool error = false;
-    uint32_t texture_id = 0;
     bool needs_more_work = false;
 };
 
+struct external_lock
+{
+    virtual ~external_lock() = default;
+    virtual uint32_t get_texture() const = 0;
+};
 
 typedef void(*callback_pfn)(void *context, reply_t const &reply);
 
@@ -59,6 +63,9 @@ struct wrapper
 
     virtual void render(request_t const& request) = 0;
     virtual void update() = 0;
+
+    virtual uint32_t texture_id() = 0;
+
 };
 
 #if defined(mbgl_wrapper_EXPORTS)
