@@ -64,8 +64,8 @@ struct wrapper
     virtual void render(request_t const& request) = 0;
     virtual void update() = 0;
 
-    virtual uint32_t texture_id() = 0;
-
+    virtual uint32_t lock_texture() = 0;
+    virtual void unlock_texture() = 0;
 };
 
 #if defined(mbgl_wrapper_EXPORTS)
@@ -77,5 +77,7 @@ struct wrapper
 
 MBGL_WRAPPER_API wrapper *create_wrapper(wrapper::params_ext_t const &params);
 MBGL_WRAPPER_API void delete_wrapper(wrapper* wrapper);
+
+MBGL_WRAPPER_API void delete_external_lock(external_lock *lock);
 
 } // namespace mbgl_wrapper

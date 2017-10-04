@@ -21,11 +21,10 @@ struct backend
 
     virtual void set_size(mbgl::Size const &size) = 0;
 
-//    virtual external_lock *create_external_lock() = 0;
-//    virtual void delete_external_lock(external_lock *lock) = 0;
-//    virtual bool locked() const = 0;
+    virtual uint32_t lock_texture() = 0;
+    virtual void unlock_texture() = 0;
+    virtual void finish_render() = 0;
 
-    virtual uint32_t texture_id() const = 0;
 };
 
 typedef std::unique_ptr<backend> backend_uptr;

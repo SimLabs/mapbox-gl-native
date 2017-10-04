@@ -35,7 +35,9 @@ struct backend_impl
         {
             mbgl::BackendScope guard{ *this };
             auto &mbgl_context = getContext();
-            fb_ = std::make_unique<fb_t>(mbgl_context, params_.max_size);
+
+            fbs_.emplace_back(mbgl_context, params_.max_size);
+            fbs_.emplace_back(mbgl_context, params_.max_size);
         }
     }
 
@@ -43,7 +45,7 @@ struct backend_impl
     {
         {
             mbgl::BackendScope guard{ *this };
-            fb_.reset();
+            fbs_.clear();
             context.reset();
         }
     }
@@ -56,8 +58,21 @@ struct backend_impl
     void bind() override
     {
         auto &context = getContext();
+        
+        uint32_t fb_index;
+        
+        {
+            std::lock_guard<std::mutex> lock(textures_mutex_);
 
-        context.bindFramebuffer = fb_->framebuffer.framebuffer;
+            assert(!textures_.rendered);
+
+            uint32_t const other = textures_.locked.get_value_or(textures_.latest);
+            fb_index = (other + 1) % fbs_.size();
+
+            textures_.rendered = fb_index;
+        }
+
+        context.bindFramebuffer = fbs_.at(fb_index).framebuffer.framebuffer;
         context.scissorTest = false;
         context.viewport = { 0, 0, size_ };
     }
@@ -75,16 +90,10 @@ struct backend_impl
 
         auto context = QOpenGLContext::currentContext();
         assert(context == &context_impl_);
-
-//        assert(!lock_);
-//        lock_ = lock_t(mutex_);
     }
 
     void deactivate() override
     {
-//        assert(lock_);
-//        lock_.reset();
-
         context_impl_.doneCurrent();
     }
 
@@ -93,33 +102,33 @@ struct backend_impl
         size_ = size;
     }
 
-    uint32_t texture_id() const override
+
+    uint32_t lock_texture() override
     {
-        return fb_->texture.texture;
+        std::lock_guard<std::mutex> lock(textures_mutex_);
+
+        assert(!textures_.locked);
+        textures_.locked = textures_.latest;
+        return fbs_.at(textures_.latest).texture.texture;
     }
 
-
-//    external_lock *create_external_lock() override
-//    {
-//        return new external_lock_impl(this);
-//    }
-//
-//
-//    void delete_external_lock(external_lock* lock) override
-//    {
-//        delete lock;
-//    }
-//
-//    bool locked() const override
-//    {
-//        return bool(lock_);
-//    }
-
-    
-private:
-    uint32_t get_texture() const
+    void unlock_texture() override
     {
-        return fb_->texture.texture;
+        std::lock_guard<std::mutex> lock(textures_mutex_);
+        
+        assert(textures_.locked);
+        textures_.locked.reset();
+    }
+
+    void finish_render() override
+    {
+        std::lock_guard<std::mutex> lock(textures_mutex_);
+
+        if (!textures_.rendered)
+            return;
+
+        textures_.latest = *textures_.rendered;
+        textures_.rendered.reset();
     }
 
 private:
@@ -138,45 +147,21 @@ private:
         mbgl::gl::Framebuffer framebuffer;
     };
 
-//private:
-//    typedef std::mutex mutex_t;
-//    typedef std::unique_lock<mutex_t> lock_t;
-//
-//    struct external_lock_impl
-//        : external_lock
-//    {
-//        explicit external_lock_impl(backend_impl *owner)
-//            : owner_(owner)
-//            , lock_(owner->mutex_)
-//        {}
-//
-//        ~external_lock_impl()
-//        {
-//            
-//        }
-//
-//        external_lock_impl(external_lock_impl const &) = delete;
-//        external_lock_impl &operator=(external_lock_impl const &) = delete;
-//
-//        uint32_t get_texture() const override
-//        {
-//            return owner_->get_texture();
-//        }
-//
-//    private:
-//        backend_impl *owner_;
-//        lock_t lock_;
-//    };
-
-    
 private:
     params_t params_;
     QOpenGLContext context_impl_;
-    std::unique_ptr<fb_t> fb_;
+
+    std::vector<fb_t> fbs_;
     mbgl::Size size_;
 
-//    mutex_t mutex_;
-//    std::optional<lock_t> lock_;
+    struct
+    {
+        uint32_t latest = 0;
+        std::optional<uint32_t> rendered;
+        std::optional<uint32_t> locked;
+    } textures_;
+
+    std::mutex textures_mutex_;
 };
 
 backend_uptr create_backend(backend::params_t const &params)
