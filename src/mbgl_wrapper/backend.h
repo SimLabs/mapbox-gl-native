@@ -22,8 +22,10 @@ struct backend
     virtual void set_size(mbgl::Size const &size) = 0;
 
     virtual uint32_t lock_texture() = 0;
-    virtual void unlock_texture() = 0;
+    virtual void unlock_texture(uint32_t index) = 0;
     virtual void finish_render() = 0;
+
+    virtual uint32_t get_texture_name(uint32_t index) = 0;
 
 };
 

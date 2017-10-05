@@ -168,9 +168,14 @@ struct wrapper_impl
         return backend_->lock_texture();
     }
 
-    void unlock_texture() override
+    void unlock_texture(uint32_t index) override
     {
-        backend_->unlock_texture();
+        backend_->unlock_texture(index);
+    }
+
+    uint32_t get_texture_name(uint32_t index) override
+    {
+        return backend_->get_texture_name(index);
     }
 
 private:

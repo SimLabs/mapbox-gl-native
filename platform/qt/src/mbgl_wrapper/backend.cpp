@@ -12,6 +12,7 @@
 #include "mbgl/gl/texture.hpp"
 #include "mbgl/gl/renderbuffer.hpp"
 #include "mbgl/gl/framebuffer.hpp"
+#include <deque>
 
 namespace mbgl_wrapper
 {
@@ -38,6 +39,12 @@ struct backend_impl
 
             fbs_.emplace_back(mbgl_context, params_.max_size);
             fbs_.emplace_back(mbgl_context, params_.max_size);
+        }
+
+        {
+            std::lock_guard<std::mutex> lock(textures_mutex_);
+            for (uint32_t i = 0; i < fbs_.size(); ++i)
+                textures_.q.push_back(i);
         }
     }
 
@@ -66,9 +73,8 @@ struct backend_impl
 
             assert(!textures_.rendered);
 
-            uint32_t const other = textures_.locked.get_value_or(textures_.latest);
-            fb_index = (other + 1) % fbs_.size();
-
+            fb_index = textures_.q.back();
+            textures_.q.pop_back();
             textures_.rendered = fb_index;
         }
 
@@ -107,17 +113,18 @@ struct backend_impl
     {
         std::lock_guard<std::mutex> lock(textures_mutex_);
 
-        assert(!textures_.locked);
-        textures_.locked = textures_.latest;
-        return fbs_.at(textures_.latest).texture.texture;
+        uint32_t const index = textures_.q.front();
+        textures_.q.pop_front();
+
+        return index;
     }
 
-    void unlock_texture() override
+    void unlock_texture(uint32_t index) override
     {
         std::lock_guard<std::mutex> lock(textures_mutex_);
-        
-        assert(textures_.locked);
-        textures_.locked.reset();
+
+        assert(index < num_textures);
+        textures_.q.push_back(index);
     }
 
     void finish_render() override
@@ -127,8 +134,14 @@ struct backend_impl
         if (!textures_.rendered)
             return;
 
-        textures_.latest = *textures_.rendered;
+        textures_.q.push_front(*textures_.rendered);
         textures_.rendered.reset();
+    }
+
+
+    uint32_t get_texture_name(uint32_t index) override
+    {
+        return fbs_.at(index).texture.texture;
     }
 
 private:
@@ -154,11 +167,12 @@ private:
     std::vector<fb_t> fbs_;
     mbgl::Size size_;
 
+    static const size_t num_textures = 3;
+
     struct
     {
-        uint32_t latest = 0;
+        std::deque<uint32_t> q;
         std::optional<uint32_t> rendered;
-        std::optional<uint32_t> locked;
     } textures_;
 
     std::mutex textures_mutex_;

@@ -65,7 +65,8 @@ struct wrapper
     virtual void update() = 0;
 
     virtual uint32_t lock_texture() = 0;
-    virtual void unlock_texture() = 0;
+    virtual void unlock_texture(uint32_t index) = 0;
+    virtual uint32_t get_texture_name(uint32_t index) = 0;
 };
 
 #if defined(mbgl_wrapper_EXPORTS)
