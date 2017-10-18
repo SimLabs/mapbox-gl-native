@@ -37,13 +37,13 @@ struct backend_impl
             mbgl::BackendScope guard{ *this };
             auto &mbgl_context = getContext();
 
-            fbs_.emplace_back(mbgl_context, params_.max_size);
-            fbs_.emplace_back(mbgl_context, params_.max_size);
+            for (uint32_t i = 0; i < num_textures; ++i)
+                fbs_.emplace_back(mbgl_context, params_.max_size);
         }
 
         {
             std::lock_guard<std::mutex> lock(textures_mutex_);
-            for (uint32_t i = 0; i < fbs_.size(); ++i)
+            for (uint32_t i = 0; i < num_textures; ++i)
                 textures_.q.push_back(i);
         }
     }
