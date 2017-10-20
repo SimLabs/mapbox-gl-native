@@ -111,6 +111,13 @@ target_link_libraries(mbgl-qt
 
 endif()
 
+add_library(qt_mapbox_wrapper SHARED
+    platform/qt/src/qt_mapbox_wrapper/wrapper_impl.cpp
+    platform/qt/src/qt_mapbox_wrapper/map_widget.cpp
+    platform/qt/src/qt_mapbox_wrapper/map_widget.h
+)
+
+
 xcode_create_scheme(TARGET mbgl-qt)
 
 if(WITH_QT_4)

@@ -401,7 +401,7 @@ void MapWindow::initializeGL()
     // Set default location to Helsinki.
     m_map->setCoordinateZoom(QMapbox::Coordinate(60.170448, 24.942046), 14);
 
-    QString styleUrl = "http://localhost:8080/styles/klokantech-basic/style.json";
+    QString styleUrl = "http://192.168.1.30:8080/styles/klokantech-basic/style.json";
     if (styleUrl.isEmpty()) {
         changeStyle();
     } else {

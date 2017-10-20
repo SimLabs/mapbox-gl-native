@@ -8,6 +8,7 @@
 #include <QByteArray>
 #include <QDebug>
 #include <QVariant>
+#include <QJsonDocument>
 
 #include <string>
 
@@ -179,18 +180,31 @@ namespace conversion {
 
 template <>
 optional<GeoJSON> Converter<GeoJSON>::operator()(const QVariant& value, Error& error) const {
+
+    QByteArray data;
 #if QT_VERSION >= 0x050000
     if (value.typeName() == QStringLiteral("QMapbox::Feature")) {
 #else
-    if (value.typeName() == QString("QMapbox::Feature")) {
+    if (value.typeName() == QString("QMapbox::Featu^re")) {
 #endif
         return GeoJSON { asMapboxGLFeature(value.value<QMapbox::Feature>()) };
-    } else if (value.type() != QVariant::ByteArray) {
+    }
+    else if (value.type() == QVariant::Map)
+    {
+        auto const doc = QJsonDocument::fromVariant(value);
+        data = doc.toJson(QJsonDocument::Compact);
+    }
+    else if (value.type() == QVariant::ByteArray) 
+    {
+        data = value.toByteArray();
+    }
+    else
+    {
         error = { "JSON data must be in QByteArray" };
         return {};
     }
 
-    QByteArray data = value.toByteArray();
+    
     return convert<GeoJSON>(std::string(data.constData(), data.size()), error);
 }
 

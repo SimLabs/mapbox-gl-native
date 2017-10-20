@@ -13,7 +13,7 @@ int main(int argc, char **argv)
     settings.setCacheDatabasePath("/tmp/mbgl-cache.db");
 #endif
     settings.setCacheDatabaseMaximumSize(20 * 1024 * 1024);
-    settings.setApiBaseUrl("http://localhost:8080/");
+    settings.setApiBaseUrl("http://192.168.1.30:8080/");
 
     MapWindow window(settings);
 
