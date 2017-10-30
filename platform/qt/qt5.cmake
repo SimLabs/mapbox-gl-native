@@ -35,6 +35,7 @@ target_link_libraries(mbgl-qt
 )
 
 target_link_libraries(qt_mapbox_wrapper
+    PRIVATE mbgl-core
     PRIVATE qmapboxgl
     PRIVATE Qt5::OpenGL
     PRIVATE Qt5::Widgets

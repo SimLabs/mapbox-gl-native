@@ -11,5 +11,6 @@ namespace qt_mapbox_wrapper
 {
 
 struct wrapper;
+struct wrapper_client;
 
 } // namespace qt_mapbox_wrapper

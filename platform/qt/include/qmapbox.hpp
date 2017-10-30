@@ -7,6 +7,8 @@
 #include <QVariant>
 #include <QString>
 
+#include "qt_mapbox_wrapper/qt_mapbox_wrapper.h"
+
 // This header follows the Qt coding style: https://wiki.qt.io/Qt_Coding_Style
 
 namespace QMapbox {
@@ -108,6 +110,8 @@ struct Q_DECL_EXPORT CustomLayerRenderParameters {
 typedef void (*CustomLayerInitializeFunction)(void* context) ;
 typedef void (*CustomLayerRenderFunction)(void* context, const CustomLayerRenderParameters&);
 typedef void (*CustomLayerDeinitializeFunction)(void* context);
+
+Q_DECL_EXPORT void SetLogPfn(qt_mapbox_wrapper::log_pfn pfn);
 
 } // namespace QMapbox
 

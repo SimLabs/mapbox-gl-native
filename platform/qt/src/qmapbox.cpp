@@ -20,6 +20,12 @@ static_assert(mbgl::underlying_type(QMapbox::Feature::PointType) == mbgl::underl
 static_assert(mbgl::underlying_type(QMapbox::Feature::LineStringType) == mbgl::underlying_type(mbgl::FeatureType::LineString), "error");
 static_assert(mbgl::underlying_type(QMapbox::Feature::PolygonType) == mbgl::underlying_type(mbgl::FeatureType::Polygon), "error");
 
+namespace mbgl
+{
+    void set_log_pfn(qt_mapbox_wrapper::log_pfn pfn);
+    
+}
+
 namespace QMapbox {
 
 /*!
@@ -243,5 +249,11 @@ Q_DECL_EXPORT QList<QPair<QString, QString> >& defaultStyles()
 
     return styles;
 }
+
+Q_DECL_EXPORT void SetLogPfn(qt_mapbox_wrapper::log_pfn pfn)
+{
+    mbgl::set_log_pfn(pfn);
+}
+
 
 } // namespace QMapbox
