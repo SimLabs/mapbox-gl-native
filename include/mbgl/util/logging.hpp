@@ -77,4 +77,6 @@ private:
     static void platformRecord(EventSeverity severity, const std::string &msg);
 };
 
+bool get_verbose_logging();
+
 } // namespace mbgl

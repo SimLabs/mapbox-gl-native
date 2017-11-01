@@ -8,14 +8,26 @@
 
 #include "qt_mapbox_wrapper/qt_mapbox_wrapper.h"
 #include <sstream>
+#include <atomic>
 
 namespace mbgl {
 
     qt_mapbox_wrapper::log_pfn g_log_pfn = nullptr;
+    std::atomic<bool> g_versbose_logging = false;
 
     void set_log_pfn(qt_mapbox_wrapper::log_pfn pfn)
     {
         g_log_pfn = pfn;
+    }
+
+    void set_verbose_logging(bool value)
+    {
+        g_versbose_logging = value;
+    }
+
+    bool get_verbose_logging()
+    {
+        return g_versbose_logging;
     }
     
     void Log::platformRecord(EventSeverity severity, const std::string &message)

@@ -23,7 +23,7 @@ static_assert(mbgl::underlying_type(QMapbox::Feature::PolygonType) == mbgl::unde
 namespace mbgl
 {
     void set_log_pfn(qt_mapbox_wrapper::log_pfn pfn);
-    
+    void set_verbose_logging(bool value);
 }
 
 namespace QMapbox {
@@ -255,5 +255,9 @@ Q_DECL_EXPORT void SetLogPfn(qt_mapbox_wrapper::log_pfn pfn)
     mbgl::set_log_pfn(pfn);
 }
 
+Q_DECL_EXPORT void SetVerboseLogging(bool value)
+{
+    mbgl::set_verbose_logging(value);
+}
 
 } // namespace QMapbox

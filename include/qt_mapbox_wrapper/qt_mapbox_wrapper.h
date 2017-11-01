@@ -58,5 +58,6 @@ QT_MAPBOX_WRAPPER_API wrapper *create_wrapper(wrapper::params_t const &params);
 QT_MAPBOX_WRAPPER_API void delete_wrapper(wrapper *);
 
 QT_MAPBOX_WRAPPER_API void set_log_pfn(log_pfn pfn);
+QT_MAPBOX_WRAPPER_API void set_verbose_logging(bool value);
 
 } // namespace qt_mapbox_wrapper

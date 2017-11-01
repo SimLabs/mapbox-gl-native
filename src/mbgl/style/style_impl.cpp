@@ -197,6 +197,8 @@ Layer* Style::Impl::getLayer(const std::string& id) const {
 Layer* Style::Impl::addLayer(std::unique_ptr<Layer> layer, optional<std::string> before) {
     // TODO: verify source
 
+    Log::Debug(Event::Style, "Adding layer '%s' to %d existing layers", layer->getID().c_str(), layers.size());
+
     if (layers.get(layer->getID())) {
         throw std::runtime_error(std::string{"Layer "} + layer->getID() + " already exists");
     }

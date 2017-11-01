@@ -112,6 +112,7 @@ typedef void (*CustomLayerRenderFunction)(void* context, const CustomLayerRender
 typedef void (*CustomLayerDeinitializeFunction)(void* context);
 
 Q_DECL_EXPORT void SetLogPfn(qt_mapbox_wrapper::log_pfn pfn);
+Q_DECL_EXPORT void SetVerboseLogging(bool value);
 
 } // namespace QMapbox
 

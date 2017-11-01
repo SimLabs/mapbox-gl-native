@@ -15,6 +15,7 @@
 namespace mbgl
 {
     void set_log_pfn(qt_mapbox_wrapper::log_pfn pfn);
+    void set_verbose_logging(bool value);
 }
 
 
@@ -106,6 +107,9 @@ struct wrapper_impl
             auto *m = widget_->get_map();
             auto const params = parse_json(json);
 
+            if (mbgl::get_verbose_logging())
+                mbgl::Log::Debug(mbgl::Event::General, "Updating source '%s': %s", name, json);
+
             m->updateSource(name, params);
         });
     }
@@ -130,7 +134,14 @@ struct wrapper_impl
 
     bool ready() const override
     {
-        return bool(widget_->get_map());
+        auto map = widget_->get_map();
+        if (!map)
+            return false;
+
+        if (!map->isFullyLoaded())
+            return false;
+
+        return true;
     }
 
 private:
@@ -167,6 +178,12 @@ QT_MAPBOX_WRAPPER_API void set_log_pfn(log_pfn pfn)
 {
     mbgl::set_log_pfn(pfn);
     QMapbox::SetLogPfn(pfn);
+}
+
+QT_MAPBOX_WRAPPER_API void set_verbose_logging(bool value)
+{
+    mbgl::set_verbose_logging(value);
+    QMapbox::SetVerboseLogging(value);
 }
 
 

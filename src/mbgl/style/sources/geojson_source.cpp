@@ -31,6 +31,43 @@ void GeoJSONSource::setURL(const std::string& url_) {
 }
 
 void GeoJSONSource::setGeoJSON(const mapbox::geojson::geojson& geoJSON) {
+    if (get_verbose_logging())
+    {
+        std::stringstream ss;
+        ss << "setGeoJson for '" << getID() << "': ";
+        
+        if (geoJSON.is<mapbox::geojson::feature_collection>())
+        {
+            auto const &fc = geoJSON.get<mapbox::geojson::feature_collection>();
+
+            ss << "Feature collection with " << fc.size() << " items:\n";
+            for (auto const &feature : fc)
+            {
+                ss << " -- ";
+
+                auto const &geom = feature.geometry;
+
+                if (geom.is<mapbox::geojson::point>())
+                {
+                    auto const &p = geom.get<mapbox::geojson::point>();
+                    ss << "Point: " << p.x << ", " << p.y;
+                }
+                else
+                {
+                    ss << "other geometry";
+                }
+                
+                ss << "\n";
+            }
+        }
+        else
+        {
+            ss << "Other source type";
+        }
+        
+        mbgl::Log::Debug(mbgl::Event::General, ss.str().c_str());
+    }
+
     req.reset();
     baseImpl = makeMutable<Impl>(impl(), geoJSON);
     observer->onSourceChanged(*this);
