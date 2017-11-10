@@ -1,3 +1,5 @@
+#if 0 
+
 #include "map_widget.h"
 
 #include <QWidget>
@@ -504,3 +506,5 @@ map_widget_uptr create_map_widget(map_widget::params_t const &params)
 
 
 } // namespace qt_mapbox_wrapper
+
+#endif

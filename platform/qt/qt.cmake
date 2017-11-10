@@ -112,9 +112,19 @@ target_link_libraries(mbgl-qt
 endif()
 
 add_library(qt_mapbox_wrapper SHARED
-    platform/qt/src/qt_mapbox_wrapper/wrapper_impl.cpp
+    platform/qt/src/qt_mapbox_wrapper/map_impl.cpp
+    platform/qt/src/qt_mapbox_wrapper/map_proxy_impl.cpp
     platform/qt/src/qt_mapbox_wrapper/map_widget.cpp
     platform/qt/src/qt_mapbox_wrapper/map_widget.h
+    platform/qt/src/qt_mapbox_wrapper/parse_json.cpp
+    platform/qt/src/qt_mapbox_wrapper/parse_json.h
+    platform/qt/src/qt_mapbox_wrapper/qt_mapbox_wrapper_internal.h
+    platform/qt/src/qt_mapbox_wrapper/safe_run.cpp
+    platform/qt/src/qt_mapbox_wrapper/safe_run.h
+    platform/qt/src/qt_mapbox_wrapper/texture_renderer_impl.cpp
+    platform/qt/src/qt_mapbox_wrapper/widget_impl.cpp
+    platform/qt/src/qt_mapbox_wrapper/wrapper_dummy.cpp
+    platform/qt/src/qt_mapbox_wrapper/wrapper_impl.cpp    
 )
 
 

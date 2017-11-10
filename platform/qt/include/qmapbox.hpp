@@ -7,7 +7,7 @@
 #include <QVariant>
 #include <QString>
 
-#include "qt_mapbox_wrapper/qt_mapbox_wrapper.h"
+#include "qt_mapbox_wrapper/qt_mapbox_wrapper_fwd.h"
 
 // This header follows the Qt coding style: https://wiki.qt.io/Qt_Coding_Style
 
