@@ -20,10 +20,21 @@ struct widget_impl
         , m_bearingAnimation(nullptr)
         , m_zoomAnimation(nullptr) 
     {
-        mbgl::Log::Debug(mbgl::Event::General, "Initializing window");
+        mbgl::Log::Info(mbgl::Event::General, "Initializing window");
 
         client_ = params.client;
         setMouseTracking(true);
+
+        {
+            QSurfaceFormat surf_format = format();
+            surf_format.setSwapInterval(params.enable_vsync ? 1 : 0);
+            setFormat(surf_format);
+        }
+
+        {
+            QSurfaceFormat surf_format = format();
+            mbgl::Log::Info(mbgl::Event::General, "Mapbox widget vsync: %d", surf_format.swapInterval());
+        }
     }
 
     ~widget_impl()

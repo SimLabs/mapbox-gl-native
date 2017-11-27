@@ -46,6 +46,7 @@ struct widget
     {
         map *m = nullptr;
         widget_client *client = nullptr;
+        bool enable_vsync = false;
     };
     
     virtual ~widget() = default;
