@@ -541,7 +541,7 @@ void Context::bindTexture(Texture& obj,
 void Context::reset() {
     std::copy(pooledTextures.begin(), pooledTextures.end(), std::back_inserter(abandonedTextures));
     pooledTextures.resize(0);
-    performCleanup();
+    //performCleanup();
 }
 
 void Context::setDirtyState() {
