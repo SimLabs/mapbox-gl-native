@@ -1,8 +1,14 @@
 #include <QOpenGLContext>
-#include <QtPlatformHeaders/QWGLNativeContext>
 #include <QMapboxGL>
+#ifdef WIN32
+#   include <QtPlatformHeaders/QWGLNativeContext>
+#else
+#   include <QtPlatformHeaders/QGLXNativeContext>
+#endif
 #include "mbgl/util/logging.hpp"
 #include <QOffscreenSurface>
+
+#include <cassert>
 
 #include "qt_mapbox_wrapper_internal.h"
 
@@ -28,7 +34,12 @@ struct texture_renderer_impl
 
         bool ok;
 
+// WARNING!!! It's may be not working on linux
+#ifdef WIN32
         QWGLNativeContext native_ctx((HGLRC)params.hglrc, (HWND)params.hwnd);
+#else
+        QGLXNativeContext native_ctx((GLXContext)params.hglrc, 0, (Window)params.hwnd);
+#endif
         main_context_.setNativeHandle(QVariant::fromValue(native_ctx));
         ok = main_context_.create();
         assert(ok && "main_context.create failed");
