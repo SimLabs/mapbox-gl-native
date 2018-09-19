@@ -1,9 +1,19 @@
 #pragma once
 
-#if defined(qt_mapbox_wrapper_EXPORTS)
-#   define QT_MAPBOX_WRAPPER_API __declspec(dllexport)
+#if defined _WIN32 || defined __CYGWIN__
+#   if defined(qt_mapbox_wrapper_EXPORTS)
+#      define QT_MAPBOX_WRAPPER_API __declspec(dllexport)
+#   else
+#      define QT_MAPBOX_WRAPPER_API __declspec(dllimport)
+#   endif
+#elif __GNUC__ >= 4
+#   if defined(qt_mapbox_wrapper_EXPORTS)
+#      define QT_MAPBOX_WRAPPER_API __attribute__((used, visibility ("default")))
+#   else
+#      define QT_MAPBOX_WRAPPER_API
+#   endif
 #else
-#   define QT_MAPBOX_WRAPPER_API __declspec(dllimport)
+#   define QT_MAPBOX_WRAPPER_API
 #endif
 
 
