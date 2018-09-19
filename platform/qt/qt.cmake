@@ -14,6 +14,8 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 if (MSVC)
     include(platform/qt/qt_msvc.cmake)
+else ()
+    include(platform/qt/qt_gcc.cmake)
 endif ()
 
 set(MBGL_QT_FILES
