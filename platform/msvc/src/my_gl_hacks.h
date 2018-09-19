@@ -2,12 +2,12 @@
 
 
  
- #include <QOpenGLFunctions_4_3_Compatibility>
+#include <QOpenGLFunctions_3_0>
  
  namespace mbgl
  {
  
-     typedef QOpenGLFunctions_4_3_Compatibility GlFunctions;
+    typedef QOpenGLFunctions_3_0 GlFunctions;
  
      GlFunctions *getGlFunctions();
  }
