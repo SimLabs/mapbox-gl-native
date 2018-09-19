@@ -3,7 +3,9 @@
 
 #include <iostream>
 
-#include <windows.h>
+#ifdef WIN32
+#   include <windows.h>
+#endif
 #include <fstream>
 
 #include "qt_mapbox_wrapper/qt_mapbox_wrapper.h"
@@ -13,7 +15,7 @@
 namespace mbgl {
 
     qt_mapbox_wrapper::log_pfn g_log_pfn = nullptr;
-    std::atomic<bool> g_versbose_logging = false;
+    std::atomic<bool> g_versbose_logging(false);
 
     void set_log_pfn(qt_mapbox_wrapper::log_pfn pfn)
     {
@@ -40,9 +42,11 @@ namespace mbgl {
         {
             std::cerr << message << std::endl;
 
+#ifdef WIN32
             OutputDebugStringA("Mbgl log: ");
             OutputDebugStringA(message.c_str());
-            OutputDebugStringA("\n");        
+            OutputDebugStringA("\n");
+#endif
         }
     }
 
