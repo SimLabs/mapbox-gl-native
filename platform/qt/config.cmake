@@ -42,11 +42,16 @@ macro(mbgl_platform_core)
 
     endif(NOT MSVC)
 
-
+if (MSVC)
     target_sources(mbgl-core
         ${MBGL_QT_FILES}
         platform/msvc/src/stdafx.cpp
     )
+else ()
+    target_sources(mbgl-core
+        ${MBGL_QT_FILES}
+    )
+endif ()
 
     target_include_directories(mbgl-core
         PUBLIC platform/default
