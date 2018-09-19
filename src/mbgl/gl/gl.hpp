@@ -34,7 +34,7 @@
 //#include <gl/wglew.h>
     //#include <GL/glext.h>
 
-#include "my_gl_hacks.h"
+#include "platform/msvc/src/my_gl_hacks.h"
 #endif
 
 namespace mbgl {

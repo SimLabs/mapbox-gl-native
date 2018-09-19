@@ -2,6 +2,8 @@
 
 #include "mbgl/util/logging.hpp"
 
+#include <boost/current_function.hpp>
+
 namespace qt_mapbox_wrapper 
 {
 

@@ -1,4 +1,6 @@
-#include "my_gl_hacks.h"
+#include "platform/msvc/src/my_gl_hacks.h"
+
+#include <cassert>
 
 #include <QOpenGLContext>
 
@@ -10,7 +12,7 @@ namespace mbgl
         auto context = QOpenGLContext::currentContext();
         assert(context);
         
-        return context->versionFunctions<QOpenGLFunctions_4_3_Compatibility>();
+        return context->versionFunctions<GlFunctions>();
 
     }
 }
