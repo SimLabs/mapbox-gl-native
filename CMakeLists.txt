@@ -1,10 +1,7 @@
 set(MBGL_PLATFORM "qt")
 
-if(WIN32)
-    set(QT_LIB_CMAKE_PATH "c:/qt/Qt5.9.1/5.9.1/msvc2017_64/lib/cmake")
-else()
-    set(QT_LIB_CMAKE_PATH "/opt/Qt/Qt5.9.1/5.9.1/qcc_64/lib/cmake")
-endif()
+set(QT_LIB_CMAKE_PATH "$ENV{QTDIR}/lib/cmake")
+
 
 set(Qt5_DIR "${QT_LIB_CMAKE_PATH}/Qt5")
 set(Qt5Core_DIR "${QT_LIB_CMAKE_PATH}/Qt5Core")
