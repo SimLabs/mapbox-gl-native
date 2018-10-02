@@ -15,7 +15,18 @@
 #include <boost/optional.hpp>
 #include <boost/utility/in_place_factory.hpp>
 #include <memory>
+#include <optional>
 
+namespace std
+{
+    namespace experimental
+    {
+        
+        using ::std::optional;
+    }
+}
+
+/*
 namespace std
 {
 
@@ -58,6 +69,7 @@ private:
     T val;
 };
 
+
 template<typename T>
 my_optional_t<std::remove_reference_t<T>> make_my_optional(T &&val)
 {
@@ -68,7 +80,7 @@ template<typename T>
 my_optional_t<std::remove_reference_t<T>> make_my_optional(T const &val)
 {
     return my_optional_t<std::remove_reference_t<T>>(val);
-}
+}*/
 
 
 
