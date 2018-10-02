@@ -53,7 +53,15 @@ public:
     return *this;
   }
   // resource release
-  ~unique_resource() UNIQUE_RESOURCE_NOEXCEPT_NOEXCEPT_THIS_RESET {
+  ~unique_resource() 
+#if !TEMPORARILY_DISABLED 
+    
+    UNIQUE_RESOURCE_NOEXCEPT_NOEXCEPT_THIS_RESET 
+
+#endif // !TEMPORARILY_DISABLED 
+
+    
+    {
     this->reset();
   }
   void reset() UNIQUE_RESOURCE_NOEXCEPT_NOEXCEPT_THIS_DELETER_CALL {

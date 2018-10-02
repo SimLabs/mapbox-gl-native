@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
-#include <experimental/optional>
 
 namespace mapbox {
 namespace geometry {
@@ -38,7 +37,10 @@ using value_base = mapbox::util::variant<null_value_t, bool, uint64_t, int64_t, 
 
 struct value : value_base
 {
-    using value_base::value_base;
+    FORWARD_CTOR(value, value_base)
+
+    value() = default;
+
 };
 
 using property_map = std::unordered_map<std::string, value>;
@@ -54,13 +56,13 @@ struct feature
 
     geometry_type geometry;
     property_map properties {};
-    std::experimental::optional<identifier> id {};
+    std::optional<identifier> id {};
 
     // GCC 4.9 does not support C++14 aggregates with non-static data member
     // initializers.
     feature(geometry_type geometry_,
             property_map properties_ = property_map {},
-            std::experimental::optional<identifier> id_ = std::experimental::optional<identifier> {})
+            std::optional<identifier> id_ = std::optional<identifier> {})
         : geometry(std::move(geometry_)),
           properties(std::move(properties_)),
           id(std::move(id_)) {}

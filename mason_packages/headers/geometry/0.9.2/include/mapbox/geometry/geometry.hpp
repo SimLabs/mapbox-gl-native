@@ -38,6 +38,11 @@ struct geometry : geometry_base<T>
      * i.e. (0, 0). Since this is not particularly useful, and could hide bugs, it is disabled.
      */
     geometry() = delete;
+
+    template<typename Arg>
+    geometry(Arg &&arg)
+        : geometry_base<T>(std::forward<Arg>(arg))
+    {}
 };
 
 template <typename T, template <typename...> class Cont>
