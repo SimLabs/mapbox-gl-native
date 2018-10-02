@@ -9,7 +9,6 @@ xcuserdata
 /platform/node/test/actual
 /platform/node/test/diff
 /mason_packages/linux-x86_64/!nunicode
-/mason_packages/headers
 /mason_packages/.binaries
 /build
 /lib
