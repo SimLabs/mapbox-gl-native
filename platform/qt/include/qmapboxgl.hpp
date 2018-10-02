@@ -14,7 +14,13 @@ class QMapboxGLPrivate;
 
 // This header follows the Qt coding style: https://wiki.qt.io/Qt_Coding_Style
 
-class Q_DECL_EXPORT QMapboxGLSettings
+#if defined(qmapboxgl_EXPORTS)
+#define qmapboxgl_API Q_DECL_EXPORT
+#else
+#define qmapboxgl_API Q_DECL_IMPORT
+#endif
+
+class qmapboxgl_API QMapboxGLSettings
 {
 public:
     QMapboxGLSettings();
@@ -71,7 +77,7 @@ private:
     QString m_apiBaseUrl;
 };
 
-struct Q_DECL_EXPORT QMapboxGLCameraOptions {
+struct qmapboxgl_API QMapboxGLCameraOptions {
     QVariant center;  // Coordinate
     QVariant anchor;  // QPointF
     QVariant zoom;    // double
@@ -79,7 +85,7 @@ struct Q_DECL_EXPORT QMapboxGLCameraOptions {
     QVariant pitch;   // double
 };
 
-class Q_DECL_EXPORT QMapboxGL : public QObject
+class qmapboxgl_API QMapboxGL : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(double latitude READ latitude WRITE setLatitude)
