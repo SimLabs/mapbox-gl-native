@@ -1,5 +1,11 @@
 #pragma once
 
+#ifdef _MSC_VER
+#   include "platform/msvc/src/vs_compat.h"
+#else
+#   include "platform/qt/src/compat.h"
+#endif
+
 #include <mapbox/geometry/point.hpp>
 #include <mapbox/geometry/line_string.hpp>
 #include <mapbox/geometry/polygon.hpp>
@@ -39,10 +45,7 @@ struct geometry : geometry_base<T>
      */
     geometry() = delete;
 
-    template<typename Arg>
-    geometry(Arg &&arg)
-        : geometry_base<T>(std::forward<Arg>(arg))
-    {}
+    FORWARD_CTOR(geometry, geometry_base<T>)
 };
 
 template <typename T, template <typename...> class Cont>

@@ -1,9 +1,6 @@
 include(platform/qt/qt.cmake)
 
 if (NOT CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
-    mason_use(sqlite VERSION 3.14.2)
-    mason_use(gtest VERSION 1.8.0${MASON_CXXABI_SUFFIX})
-
     if(NOT WITH_QT_DECODERS)
         mason_use(libjpeg-turbo VERSION 1.5.0)
         mason_use(libpng VERSION 1.6.25)
